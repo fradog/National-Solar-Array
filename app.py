@@ -47,7 +47,7 @@ st.sidebar.header("Input Parameters")
 inputs = {}
 for param, value in default_inputs.items():
     if isinstance(value, int):
-        step = 1 if param in ['project_lifespan', 'bond_term'] else 1000 if 'investment' in param else 10**6 if 'capacity' in param or 'population' in param else 10**9
+        step = 1 if param in ['project_lifespan', 'bond_term', 'carbon_tax_rate'] else 1000 if 'investment' in param else 10**6 if 'capacity' in param or 'population' in param else 10**9
         inputs[param] = st.sidebar.number_input(f"{param.replace('_', ' ').title()}", min_value=0, value=value, step=step)
     elif isinstance(value, float):
         step = 0.0001 if param == 'degradation_rate' else 0.001 if param in ['om_rate', 'capacity_factor'] else 0.01
@@ -83,4 +83,5 @@ st.plotly_chart(fig1)
 # Plot 2: Balance Trends
 fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
                title="Balance Trends")
+
 st.plotly_chart(fig2)
