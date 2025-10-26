@@ -69,6 +69,7 @@ st.header("Financial Metrics")
 st.dataframe(cash_flows_df.round(2))
 
 st.header("Funding Mix")
+st.write("Shows funding sources for the bond principal, including surplus carbon tax revenue not needed for the bond.")
 st.dataframe(funding_mix_df.round(2))
 
 st.header("Key Metrics")
@@ -83,5 +84,4 @@ st.plotly_chart(fig1)
 # Plot 2: Balance Trends
 fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
                title="Balance Trends")
-
 st.plotly_chart(fig2)
