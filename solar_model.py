@@ -170,6 +170,7 @@ def calculate_funding_mix(inputs, bond_principal):
         bond_coverage = bond_proceeds / bond_principal * 100
         diverted_funds = diverted_funds_10yr_mid
         carbon_tax_contribution = min(carbon_tax_10yr, bond_principal - bond_proceeds - diverted_funds)
+        carbon_tax_surplus = max(0, carbon_tax_10yr - carbon_tax_contribution)  # Calculate surplus
         tax_revenue_needed = bond_principal - bond_proceeds - diverted_funds - carbon_tax_contribution
         tax_revenue_percent = tax_revenue_needed / bond_principal * 100
         funding_mix.append({
@@ -181,6 +182,7 @@ def calculate_funding_mix(inputs, bond_principal):
             'Diverted Funds Coverage (%)': diverted_funds / bond_principal * 100,
             'Carbon Tax Revenue ($B)': carbon_tax_contribution / 10**9,
             'Carbon Tax Coverage (%)': carbon_tax_contribution / bond_principal * 100,
+            'Carbon Tax Surplus ($B)': carbon_tax_surplus / 10**9,  # New column
             'Tax Revenue Needed ($B)': tax_revenue_needed / 10**9,
             'Tax Revenue Coverage (%)': tax_revenue_percent
         })
@@ -217,4 +219,5 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Total Dividends Paid ($T)': total_dividends_paid,
         'Debt Coverage Ratio Year 10': debt_coverage_ratio_year10,
         'Final Reinvested Balance ($T)': final_reinvested_balance
+
     }
