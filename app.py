@@ -42,18 +42,48 @@ default_inputs = {
     'carbon_tax_effective_rate': 0.75
 }
 
+# Define labels with units
+input_labels = {
+    'project_lifespan': 'Project Lifespan (years)',
+    'initial_capacity': 'Initial Capacity (GWp)',
+    'target_capacity': 'Target Capacity (GWp)',
+    'capacity_factor': 'Capacity Factor',
+    'revenue_per_kwh': 'Revenue per kWh ($/kWh)',
+    'avoided_fuel_per_kwh': 'Avoided Fuel Cost per kWh ($/kWh)',
+    'capital_cost_per_kwp': 'Capital Cost per kWp ($/kWp)',
+    'om_rate': 'O&M Rate (%/100 of Capital Cost)',
+    'grid_maintenance': 'Grid Maintenance ($B)',
+    'discount_rate': 'Discount Rate',
+    'degradation_rate': 'Degradation Rate',
+    'reinvestment_percentage': 'Reinvestment Percentage',
+    'investment_return_rate': 'Investment Return Rate',
+    'bond_interest_rate': 'Bond Interest Rate',
+    'bond_issuance_flat_fee': 'Bond Issuance Flat Fee ($B)',
+    'bond_term': 'Bond Term (years)',
+    'dividend_percentage': 'Dividend Percentage',
+    'individual_investment': 'Individual Investment ($)',
+    'us_adult_population': 'US Adult Population (M)',
+    'participation_rate_low': 'Participation Rate Low',
+    'participation_rate_mid': 'Participation Rate Mid',
+    'participation_rate_high': 'Participation Rate High',
+    'carbon_tax_rate': 'Carbon Tax Rate ($/metric ton)',
+    'us_emissions_tons': 'US Emissions (metric tons)',
+    'carbon_tax_effective_rate': 'Carbon Tax Effective Rate'
+}
+
 # Sidebar for inputs
 st.sidebar.header("Input Parameters")
 inputs = {}
 for param, value in default_inputs.items():
+    label = input_labels.get(param, param.replace('_', ' ').title())  # Fallback to default label if not in input_labels
     if isinstance(value, int):
         step = 1 if param in ['project_lifespan', 'bond_term', 'carbon_tax_rate'] else 1000 if 'investment' in param else 10**6 if 'capacity' in param or 'population' in param else 10**9
-        inputs[param] = st.sidebar.number_input(f"{param.replace('_', ' ').title()}", min_value=0, value=value, step=step)
+        inputs[param] = st.sidebar.number_input(label, min_value=0, value=value, step=step)
     elif isinstance(value, float):
         step = 0.0001 if param == 'degradation_rate' else 0.001 if param in ['om_rate', 'capacity_factor'] else 0.01
         max_val = value * 2 if param != 'capacity_factor' else 1.0
         format_str = "%.4f" if param in ['degradation_rate', 'om_rate'] else "%.2f"
-        inputs[param] = st.sidebar.slider(f"{param.replace('_', ' ').title()}", min_value=0.0, max_value=max_val, value=value, step=step, format=format_str)
+        inputs[param] = st.sidebar.slider(label, min_value=0.0, max_value=max_val, value=value, step=step, format=format_str)
 
 # Calculate results
 bond_principal = calculate_bond_principal(inputs)
