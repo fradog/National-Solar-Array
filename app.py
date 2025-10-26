@@ -45,8 +45,8 @@ default_inputs = {
 # Define labels with units
 input_labels = {
     'project_lifespan': 'Project Lifespan (years)',
-    'initial_capacity': 'Initial Capacity (GWp)',
-    'target_capacity': 'Target Capacity (GWp)',
+    'initial_capacity': 'Initial Capacity (kWp)',
+    'target_capacity': 'Target Capacity (kWp)',
     'capacity_factor': 'Capacity Factor',
     'revenue_per_kwh': 'Revenue per kWh ($/kWh)',
     'avoided_fuel_per_kwh': 'Avoided Fuel Cost per kWh ($/kWh)',
@@ -115,3 +115,4 @@ st.plotly_chart(fig1)
 fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
                title="Balance Trends")
 st.plotly_chart(fig2)
+
