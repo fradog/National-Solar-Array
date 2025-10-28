@@ -61,7 +61,7 @@ input_labels = {
     'reinvestment_percentage': 'Reinvestment Percentage',
     'investment_return_rate': 'Investment Return Rate',
     'bond_interest_rate': 'Bond Interest Rate',
-    'bond_issuance_flat_fee': 'Bond Issuance Flat Fee ($B)',
+    'bond_issuance_flat_fee': 'Bond Issuance Flat Fee ($)',
     'bond_term': 'Bond Term (years)',
     'dividend_percentage': 'Dividend Percentage',
     'individual_investment': 'Individual Investment ($)',
@@ -121,3 +121,4 @@ st.plotly_chart(fig1)
 fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
                title="Balance Trends")
 st.plotly_chart(fig2)
+
