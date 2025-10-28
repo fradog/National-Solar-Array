@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct 25 10:40:31 2025
+Created on Mon Oct 27 18:16:00 2025
 
 @author: dhfra
 """
@@ -11,8 +11,8 @@ import numpy_financial as npf
 import pandas as pd
 
 def calculate_bond_principal(inputs, buildout_years=10):
-    initial_capacity = inputs['initial_capacity']
-    target_capacity = inputs['target_capacity']
+    initial_capacity = inputs['initial_capacity']  # kWp
+    target_capacity = inputs['target_capacity']  # kWp
     hours_per_year = inputs['capacity_factor'] * 8760
     capital_cost_per_kwp = inputs['capital_cost_per_kwp']
     om_rate = inputs['om_rate']
@@ -20,11 +20,23 @@ def calculate_bond_principal(inputs, buildout_years=10):
     revenue_per_kwh = inputs['revenue_per_kwh']
     avoided_fuel_per_kwh = inputs['avoided_fuel_per_kwh']
     degradation_rate = inputs['degradation_rate']
+    us_emissions_tons = inputs['us_emissions_tons']
+    carbon_tax_rate = inputs['carbon_tax_rate']
+    carbon_tax_effective_rate = inputs['carbon_tax_effective_rate']
+    displaceable_proportion = inputs['displaceable_proportion']
+    efficiency_downgrade = inputs['efficiency_downgrade']
+    
+    # Validation
+    if displaceable_proportion < 0 or displaceable_proportion > 1:
+        raise ValueError("Displaceable proportion must be between 0 and 1")
     
     annual_addition = (target_capacity - initial_capacity) / buildout_years
     shortfall_sum = 0
     cumulative_capacity = initial_capacity
     effective_capacity = initial_capacity
+    displaceable_emissions = us_emissions_tons * displaceable_proportion
+    non_displaceable_emissions = us_emissions_tons * (1 - displaceable_proportion)
+    carbon_tax_10yr = 0
     
     for t in range(buildout_years):
         planned_capacity = min(initial_capacity + annual_addition * t, target_capacity)
@@ -40,17 +52,20 @@ def calculate_bond_principal(inputs, buildout_years=10):
         om_cost = cumulative_capacity * capital_cost_per_kwp * om_rate
         total_costs = capital_cost + om_cost + grid_maintenance
         revenue = energy_kwh * revenue_per_kwh
-        avoided_fuel = energy_kwh * avoided_fuel_per_kwh
-        total_inflows = revenue + avoided_fuel
+        avoided_fuel = energy_kwh / efficiency_downgrade * avoided_fuel_per_kwh
+        remaining_emissions = displaceable_emissions * (1 - t / buildout_years) + non_displaceable_emissions
+        annual_carbon_tax = carbon_tax_rate * remaining_emissions * carbon_tax_effective_rate
+        carbon_tax_10yr += annual_carbon_tax
+        total_inflows = revenue + avoided_fuel + annual_carbon_tax
         net_cash_flow = total_inflows - total_costs
         if net_cash_flow < 0:
             shortfall_sum += -net_cash_flow
     
-    return shortfall_sum
+    return shortfall_sum, carbon_tax_10yr
 
 def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
-    initial_capacity = inputs['initial_capacity']
-    target_capacity = inputs['target_capacity']
+    initial_capacity = inputs['initial_capacity']  # kWp
+    target_capacity = inputs['target_capacity']  # kWp
     hours_per_year = inputs['capacity_factor'] * 8760
     revenue_per_kwh = inputs['revenue_per_kwh']
     avoided_fuel_per_kwh = inputs['avoided_fuel_per_kwh']
@@ -64,6 +79,7 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
     dividend_percentage = inputs['dividend_percentage']
     bond_term = inputs['bond_term']
     individual_investment = inputs['individual_investment']
+    efficiency_downgrade = inputs['efficiency_downgrade']
     
     annual_addition = (target_capacity - initial_capacity) / 10
     annual_debt_service = -npf.pmt(bond_interest_rate, bond_term, bond_principal) if bond_term > 0 else 0
@@ -106,7 +122,7 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
         cumulative_capacity += total_new_capacity
         effective_capacity += total_new_capacity
         revenue = energy_kwh * revenue_per_kwh
-        avoided_fuel = energy_kwh * avoided_fuel_per_kwh
+        avoided_fuel = energy_kwh / efficiency_downgrade * avoided_fuel_per_kwh
         total_annual_inflows = revenue + avoided_fuel
         capital_cost = total_new_capacity * capital_cost_per_kwp
         om_cost = cumulative_capacity * capital_cost_per_kwp * om_rate
@@ -148,41 +164,31 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
     
     return pd.DataFrame(data)
 
-def calculate_funding_mix(inputs, bond_principal):
+def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
     us_adult_population = inputs['us_adult_population']
     participation_rate_low = inputs['participation_rate_low']
     participation_rate_mid = inputs['participation_rate_mid']
     participation_rate_high = inputs['participation_rate_high']
-    carbon_tax_rate = inputs['carbon_tax_rate']
-    us_emissions_tons = inputs['us_emissions_tons']
-    carbon_tax_effective_rate = inputs['carbon_tax_effective_rate']
     individual_investment = inputs['individual_investment']
     
-    carbon_tax_annual = carbon_tax_rate * us_emissions_tons * carbon_tax_effective_rate
-    carbon_tax_10yr = carbon_tax_annual * 10
     diverted_funds_annual_mid = (12.5 + 2.5 + 7.5) * 10**9  # Fossil, DOE, DoD
-    diverted_funds_10yr_mid = diverted_funds_annual_mid * 10
+    diverted_funds_10yr_mid = diverted_funds_annual_mid * buildout_years
     
     funding_mix = []
     for pr in [participation_rate_low, participation_rate_mid, participation_rate_high]:
         num_investors = us_adult_population * pr
         bond_proceeds = num_investors * individual_investment
-        bond_coverage = bond_proceeds / bond_principal * 100
+        bond_coverage = bond_proceeds / bond_principal * 100 if bond_principal > 0 else 0
         diverted_funds = diverted_funds_10yr_mid
-        carbon_tax_contribution = min(carbon_tax_10yr, bond_principal - bond_proceeds - diverted_funds)
-        carbon_tax_surplus = max(0, carbon_tax_10yr - carbon_tax_contribution)  # Calculate surplus
-        tax_revenue_needed = bond_principal - bond_proceeds - diverted_funds - carbon_tax_contribution
-        tax_revenue_percent = tax_revenue_needed / bond_principal * 100
+        tax_revenue_needed = bond_principal - bond_proceeds - diverted_funds
+        tax_revenue_percent = tax_revenue_needed / bond_principal * 100 if bond_principal > 0 else 0
         funding_mix.append({
             'Participation Rate (%)': pr * 100,
             'Number of Investors (M)': num_investors / 10**6,
             'Bond Proceeds ($B)': bond_proceeds / 10**9,
             'Bond Coverage (%)': bond_coverage,
             'Diverted Funds ($B)': diverted_funds / 10**9,
-            'Diverted Funds Coverage (%)': diverted_funds / bond_principal * 100,
-            'Carbon Tax Revenue ($B)': carbon_tax_contribution / 10**9,
-            'Carbon Tax Coverage (%)': carbon_tax_contribution / bond_principal * 100,
-            'Carbon Tax Surplus ($B)': carbon_tax_surplus / 10**9,  # New column
+            'Diverted Funds Coverage (%)': diverted_funds / bond_principal * 100 if bond_principal > 0 else 0,
             'Tax Revenue Needed ($B)': tax_revenue_needed / 10**9,
             'Tax Revenue Coverage (%)': tax_revenue_percent
         })
@@ -203,7 +209,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
     cumulative_surplus_post_debt = sum(cash_flows_post_debt) / 10**12
     total_interest_paid = sum(cash_flows_df['Interest Payment ($B)']) * 10**9 / 10**12
     total_dividends_paid = sum(cash_flows_df['Dividends ($B)']) * 10**9 / 10**12
-    debt_coverage_ratio_year10 = (cash_flows_df['Cash Flow Pre-Debt ($B)'].iloc[9] * 10**9 / (-npf.pmt(bond_interest_rate, bond_term, bond_principal))) if bond_term > 0 else float('nan')
+    debt_coverage_ratio_year10 = (cash_flows_df['Cash Flow Pre-Debt ($B)'].iloc[9] * 10**9 / (-npf.pmt(bond_interest_rate, bond_term, bond_principal))) if bond_term > 0 and bond_principal > 0 else float('nan')
     final_reinvested_balance = cash_flows_df['Reinvested Balance ($B)'].iloc[-1] * 10**9 / 10**12
     
     investor_cash_flows = [-individual_investment] + cash_flows_df['Investor Total Cash Flow ($)'].tolist()
@@ -219,5 +225,4 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Total Dividends Paid ($T)': total_dividends_paid,
         'Debt Coverage Ratio Year 10': debt_coverage_ratio_year10,
         'Final Reinvested Balance ($T)': final_reinvested_balance
-
     }
