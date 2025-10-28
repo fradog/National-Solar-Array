@@ -151,7 +151,7 @@ metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifes
 st.header("System Size")
 st.write("System Target Energy Production: 13,100 teraWatthours")
 st.write("In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. After the efficiency improvement of \
-         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require 44.7 quads (13,024 tWh) of electrical energy.")
+         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require 44.7 quads (13,100 tWh) of electrical energy.")
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("Note: if Annual Energy is different than target energy, adjust capacity factor or Target Capacity")
 st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
@@ -249,3 +249,4 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
