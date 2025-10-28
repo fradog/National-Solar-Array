@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tues Oct 28 13:03:29 2025
+Created on Tues Oct 28 15:03:29 2025
 
 @author: dhfra
 """
@@ -30,7 +30,7 @@ default_inputs = {
     'capacity_factor': 0.2700,
     'revenue_per_kwh': 0.16,
     'avoided_fuel_per_kwh': 0.03,
-    'efficiency_downgrade': 44 / 77,
+    'efficiency_downgrade': 44.7 / 74.7, #from my spreadsheet evaluation (quads) of 2023 end use sector energy consumption
     'capital_cost_per_kwp': 1.73 * 10**3,
     'om_rate': 0.01,
     'grid_maintenance': 50 * 10**9,
@@ -150,10 +150,14 @@ metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifes
 # Display results
 st.header("System Size")
 st.write("System Target Energy Production: 13,100 teraWatthours")
+st.write("In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. After the efficiency improvement of \
+         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require 44.7 quads (13,024 tWh) of electrical energy.")
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("Note: if Annual Energy is different than target energy, adjust capacity factor or Target Capacity")
 st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
-st.write("Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses, increasing this will have a detrimental effect on Capacity Factor, I estimate a change in coverage ratio from 0.40 to 0.50 to reduce capcity factor by about 3.7%")
+st.write("Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses,\
+         increasing this will have a detrimental effect on Capacity Factor, I estimate a change in coverage ratio from 0.40 to 0.50 to reduce \
+             capcity factor by about 3.7%.")
 
 st.header("Bond Principal")
 st.write(f"Calculated Bond Principal: ${bond_principal / 10**9:.2f}B")
@@ -245,5 +249,3 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
-
-
