@@ -12,7 +12,8 @@ import plotly.express as px
 from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
 
 st.title("National Solar Array Bond Initiative")
-st.write("Welcome to my National Solar Array (with battery storage) financial simulation. \
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Welcome to my National Solar Array (with battery storage) financial simulation. \
          It's purpose is to illustrate that such a massive effort to achieve Net Zero in the US by around 2035-2037 (depending on how soon we can start), \
              has a significant positive financial impact. The premise is that the array is part of a nationalized grid project and the energy produced is \
                  consistent with national security goals. As such it is funded by either a portion of our national budget or by a Bond initiative, or a \
@@ -20,7 +21,9 @@ st.write("Welcome to my National Solar Array (with battery storage) financial si
                          At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
                              competitive investment opportunities in any arena. See for yourself, play with the inputs and observe their effects. Enjoy \
                                  the realization that we can actually solve the Climate Crisis and enjoy not only an improvement in our children's futures \
-                                     but become financially secure and energy independent.")
+                                     but become financially secure and energy independent."
+                                     "</span>",
+                                unsafe_allow_html=True)
 
 # Define default inputs
 default_inputs = {
@@ -150,25 +153,40 @@ metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifes
 # Display results
 st.header("System Size")
 st.write("System Target Energy Production: 13,100 teraWatthours")
-st.write("In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. After the efficiency improvement of \
-         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require 44.7 quads (13,100 tWh) of electrical energy.")
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. After the efficiency improvement of \
+         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require 44.7 quads (13,100 tWh) of electrical energy."
+         "</span>",
+    unsafe_allow_html=True)
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
-st.write("Note: if Annual Energy is different than target energy, adjust capacity factor or Target Capacity")
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Note: if Annual Energy is different than target energy, adjust capacity factor or Target Capacity"
+         "</span>",
+    unsafe_allow_html=True)
 st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
-st.write("Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses.\
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses.\
          Increasing this will have a detrimental effect on Capacity Factor. I estimate a change in coverage ratio from 0.40 to 0.50 to reduce \
-             capcity factor by about 3.7%.")
+             capcity factor by about 3.7%."
+         "</span>",
+    unsafe_allow_html=True)
 
 st.header("Bond Principal")
 st.write(f"Calculated Bond Principal: ${bond_principal / 10**9:.2f}B")
 st.write(f"Total Carbon Tax Revenue (10 years): ${carbon_tax_10yr / 10**9:.2f}B")
-st.write("Note: Carbon tax revenue applied as cash flow to reduce bond principal.")
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Note: Carbon tax revenue applied as cash flow to reduce bond principal."
+         "</span>",
+    unsafe_allow_html=True)
 
 st.header("Financial Metrics")
 st.dataframe(cash_flows_df.round(2))
 
 st.header("Funding Mix")
-st.write("Shows funding sources for the reduced bond principal (after carbon tax revenue).")
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Shows funding sources for the reduced bond principal (after carbon tax revenue)."
+         "</span>",
+    unsafe_allow_html=True)
 st.dataframe(funding_mix_df.round(2))
 
 #st.header("Key Metrics")
@@ -249,5 +267,4 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
-
 
