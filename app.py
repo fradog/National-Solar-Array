@@ -155,8 +155,8 @@ st.write("In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) o
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("Note: if Annual Energy is different than target energy, adjust capacity factor or Target Capacity")
 st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
-st.write("Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses,\
-         increasing this will have a detrimental effect on Capacity Factor, I estimate a change in coverage ratio from 0.40 to 0.50 to reduce \
+st.write("Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses.\
+         Increasing this will have a detrimental effect on Capacity Factor. I estimate a change in coverage ratio from 0.40 to 0.50 to reduce \
              capcity factor by about 3.7%.")
 
 st.header("Bond Principal")
@@ -249,4 +249,5 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
