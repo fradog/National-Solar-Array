@@ -9,7 +9,7 @@ Created on Tues Oct 28 13:03:29 2025
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from solar_model_energywork_1 import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
+from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
 
 st.title("National Solar Array Bond Initiative")
 st.write("Welcome to my National Solar Array (with battery storage) financial simulation. \
@@ -245,4 +245,5 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
