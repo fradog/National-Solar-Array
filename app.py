@@ -15,7 +15,7 @@ st.title("National Solar Array Bond Initiative")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Welcome to my National Solar Array (with battery storage) financial simulation. \
          It's purpose is to illustrate that such a massive effort to achieve Net Zero in the US by around 2035-2037 (depending on how soon we can start), \
-             has a significant positive financial impact. The premise is that the array is part of a nationalized grid project and the energy produced is \
+             has a significant positive financial impact with no one left behind. The premise is that the array is part of a nationalized grid project and the energy produced is \
                  consistent with national security goals. As such it is funded by either a portion of our national budget or by a Bond initiative, or a \
                      combination of both. Another key premise is that the energy is sold to users at the current national average price for electricity.\
                          At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
@@ -173,6 +173,13 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
 
 st.header("Bond Principal")
 st.write(f"Calculated Bond Principal: ${bond_principal / 10**9:.2f}B")
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Investors in this bond will see compound annual growth rates competitive with other much higher risk investments. \
+         This simulation divides the net cash flow in into a mix of an amount paid out to investors as dividends to bond holders \
+         and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
+         purpose in the interest of the nation."
+         "</span>",
+    unsafe_allow_html=True)
 st.write(f"Total Carbon Tax Revenue (10 years): ${carbon_tax_10yr / 10**9:.2f}B")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Note: Carbon tax revenue applied as cash flow to reduce bond principal."
@@ -267,4 +274,5 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
