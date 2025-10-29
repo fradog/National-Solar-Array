@@ -174,10 +174,11 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
 st.header("Bond Principal")
 st.write(f"Calculated Bond Principal: ${bond_principal / 10**9:.2f}B")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "This prinsipal is essentially how much we would need to build the array and its associated storage and grid upgrades and maintenance.\
+         "This prinsipal is essentially how much we would need to build the array, its associated storage, grid upgrades and grid maintenance.\
          It is roughly on the order of one year's defense budget. Investors in this bond will see compound annual growth rates \
          competitive with other much higher risk investments. \
-         This simulation divides the net cash flow in into a mix of an amount paid out to investors as dividends to bond holders \
+         Try moving the Reinvestment Percentage slider moved toward zero and push the Dividend Percentage slider toward one and watch the \
+         investor's balance syrocket. This simulation divides the net cash-flow-in into a mix of an amount paid out to investors as dividends \
          and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
          purpose in the interest of the nation."
          "</span>",
@@ -276,6 +277,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
