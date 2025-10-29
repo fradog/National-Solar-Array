@@ -174,7 +174,9 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
 st.header("Bond Principal")
 st.write(f"Calculated Bond Principal: ${bond_principal / 10**9:.2f}B")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Investors in this bond will see compound annual growth rates competitive with other much higher risk investments. \
+         "This prinsipal is essentially how much we would need to build the array and its associated storage and grid upgrades and maintenance.\
+         It is roughly on the order of magnitude of one year's of defense budget. Investors in this bond will see compound annual growth rates \
+         competitive with other much higher risk investments. \
          This simulation divides the net cash flow in into a mix of an amount paid out to investors as dividends to bond holders \
          and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
          purpose in the interest of the nation."
@@ -274,5 +276,6 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
