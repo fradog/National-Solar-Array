@@ -20,8 +20,8 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
                      combination of both. Another key premise is that the energy is sold to users at the current national average price for electricity.\
                          At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
                              competitive investment opportunities in any arena. See for yourself, play with the inputs and observe their effects. Enjoy \
-                                 the realization that we can actually solve the Climate Crisis and enjoy not only an improvement in our children's futures \
-                                     but become financially secure and energy independent."
+                                 the realization that we can actually solve the Climate Crisis and not only improve our childrens futures \
+                                     but become financially secure and energy independent while doing so."
                                      "</span>",
                                 unsafe_allow_html=True)
 
@@ -277,6 +277,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
