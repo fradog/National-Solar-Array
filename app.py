@@ -177,7 +177,7 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "The Bond Principal is essentially how much we would need to build the array, its associated storage, grid upgrades and grid maintenance.\
          It is roughly on the order of one year's defense budget. Investors in this bond will see compound annual growth rates \
          competitive with other much higher risk investments. \
-         Try moving the Reinvestment Percentage slider moved toward zero and push the Dividend Percentage slider toward one and watch the \
+         Try moving the Reinvestment Percentage slider toward zero and push the Dividend Percentage slider toward one and watch the \
          investor's balance syrocket. This simulation divides the net cash-flow-in into a mix of an amount paid out to investors as dividends \
          and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
          purpose in the interest of the nation."
@@ -277,6 +277,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
