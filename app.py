@@ -260,7 +260,7 @@ st.plotly_chart(fig1)
 
 # Plot 2: Balance Trends
 fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
-               title="Balance Trends")
+               title="National Solar Array Cummulative Balance")
 st.plotly_chart(fig2)
 
 # Plot 3: Emissions Reduction
@@ -277,6 +277,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
