@@ -126,7 +126,7 @@ for param, value in default_inputs.items():
         )
         max_val = (
             value * 1.5 if param in ['capacity_factor']
-            else value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion']
+            else value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion', 'participation_rate_high']
             else 1.0
         )
         format_str = (
@@ -277,6 +277,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
