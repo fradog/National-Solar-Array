@@ -160,7 +160,7 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
     unsafe_allow_html=True)
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Note: if Annual Energy is different than target energy, adjust capacity factor or Target Capacity"
+         "Note: if Annual Energy is different than target energy, adjust Capacity Factor or Target Capacity"
          "</span>",
     unsafe_allow_html=True)
 st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
@@ -277,6 +277,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
