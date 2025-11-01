@@ -12,30 +12,6 @@ import plotly.express as px
 from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
 from efficiency_downgrade import calculate_efficiency_downgrade
 
-mix_inputs = {
-    'total_energy_quads': 77.10,
-    'petroleum_fraction': .459,
-    'gas_fraction': .436,
-    'coal_fraction': .105,
-    'petroleum_trans_fraction': .696,
-    'petroleum_heating_fraction': .296,
-    'petroleum_elec_fraction': .008,
-    'gas_trans_fraction': .040,
-    'gas_heating_fraction': .560,
-    'gas_elec_fraction': .400,
-    'coal_trans_fraction': 0.0,
-    'coal_heating_fraction': .114,
-    'coal_elec_fraction': .886,
-    'vehicle_ice_eff': .200,
-    'petroleum_heating_eff': 1.000,
-    'gas_heating_eff': 1.000,
-    'utility_ice_elec_eff': .370,
-    'coal_heating_eff': 1.000,
-    'vehicle_elec_eff': .800,
-    'elec_heating_eff': 1.000,
-    'elec_elec_eff': 1.000
-}
-
 st.title("National Solar Array Bond Initiative")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Welcome to my National Solar Array (with battery storage) financial simulation. \
@@ -398,6 +374,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
