@@ -11,6 +11,16 @@ import pandas as pd
 import plotly.express as px
 from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
 from efficiency_downgrade import calculate_efficiency_downgrade
+import importlib
+import sys
+
+# --- FORCE CACHE CLEAR & MODULE RELOAD (for GitHub web editing) ---
+st.cache_data.clear()  # Clears all cached data (including stale function results)
+if 'efficiency_downgrade' in sys.modules:
+    importlib.reload(sys.modules['efficiency_downgrade'])
+from efficiency_downgrade import calculate_efficiency_downgrade
+
+# --- END RELOAD BLOCK ---
 
 st.title("National Solar Array Bond Initiative")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
@@ -368,6 +378,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
