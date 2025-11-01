@@ -33,7 +33,7 @@ mix_inputs = {
     'coal_heating_eff': 1.000,
     'vehicle_elec_eff': .800,
     'elec_heating_eff': 1.000,
-    'ele_elec_eff': 1.000
+    'elec_elec_eff': 1.000
 }
 
 st.title("National Solar Array Bond Initiative")
@@ -398,6 +398,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
