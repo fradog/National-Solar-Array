@@ -69,11 +69,12 @@ if __name__ == "__main__":
         'gas_heating_eff': 1.000,
         'coal_heating_eff': 1.000,
         'elec_heating_eff': 1.000,
-        'ele_elec_eff': 1.000
+        'elec_elec_eff': 1.000
     }
     print("Test result:", calculate_efficiency_downgrade(test_inputs))
     
 
                                                                                                   
+
 
 
