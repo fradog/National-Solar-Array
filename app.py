@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
+from efficiency_downgrade import calculate_efficiency_downgrade
 
 st.title("National Solar Array Bond Initiative")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
@@ -33,7 +34,7 @@ default_inputs = {
     'capacity_factor': 0.2700,
     'revenue_per_kwh': 0.16,
     'avoided_fuel_per_kwh': 0.03,
-    'efficiency_downgrade': 44.7 / 74.7, #from my spreadsheet evaluation (quads) of 2023 end use sector energy consumption
+    'efficiency_downgrade': calculate_efficiency_downgrade, #from my spreadsheet evaluation (quads) of 2023 end use sector energy consumption
     'capital_cost_per_kwp': 1.73 * 10**3,
     'om_rate': 0.01,
     'grid_maintenance': 50 * 10**9,
@@ -277,6 +278,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
