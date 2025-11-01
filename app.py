@@ -131,9 +131,9 @@ with col3:
 # --------------------------------------------------------------
 mix_inputs = {
     'total_energy_quads'       : 77.10,
-    'petroleum_fraction'       : .354,
-    'gas_fraction'             : .336,
-    'coal_fraction'            : .081,
+    'petroleum_fraction': .459,
+    'gas_fraction': .436,
+    'coal_fraction': .105,
     'petroleum_trans_fraction' : .696,
     'petroleum_heating_fraction': .296,
     'petroleum_elec_fraction'   : .008,
@@ -400,6 +400,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
