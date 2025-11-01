@@ -60,7 +60,7 @@ default_inputs = {
     'capacity_factor': 0.2700,
     'revenue_per_kwh': 0.16,
     'avoided_fuel_per_kwh': 0.03,
-    'efficiency_downgrade': 0.50,
+    'efficiency_downgrade': 0.10,
     'capital_cost_per_kwp': 1.73 * 10**3,
     'om_rate': 0.01,
     'grid_maintenance': 50 * 10**9,
@@ -400,6 +400,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
