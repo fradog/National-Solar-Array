@@ -60,7 +60,7 @@ default_inputs = {
     'capacity_factor': 0.2700,
     'revenue_per_kwh': 0.16,
     'avoided_fuel_per_kwh': 0.03,
-    'efficiency_downgrade': ff_dg_ratio,
+    'efficiency_downgrade': 0.50,
     'capital_cost_per_kwp': 1.73 * 10**3,
     'om_rate': 0.01,
     'grid_maintenance': 50 * 10**9,
@@ -83,6 +83,102 @@ default_inputs = {
     'panel_rating': 700 / 2.57,
     'coverage_ratio': 0.4
 }
+# --------------------------------------------------------------
+# 1. Extend default_inputs with the three new efficiencies
+# --------------------------------------------------------------
+default_inputs.update({
+    'vehicle_ice_eff'       : 0.200,   # 20 %  (typical ICE car)
+    'vehicle_elec_eff'      : 0.800,   # 80 %  (EV drivetrain)
+    'utility_ice_elec_eff'  : 0.370,   # 37 %  (average fossil-fired plant)
+})
+
+# --------------------------------------------------------------
+# 2. UI – three new sliders (place them wherever you like)
+# --------------------------------------------------------------
+st.subheader("Fossil-to-Electric Efficiency Assumptions")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    vehicle_ice_eff = st.slider(
+        label="Average ICE Vehicle Efficiency",
+        min_value=0.10, max_value=0.35, step=0.005,
+        value=default_inputs['vehicle_ice_eff'],
+        format="%.3f",
+        help="Typical thermal efficiency of gasoline/diesel vehicles (10-35 %)."
+    )
+
+with col2:
+    vehicle_elec_eff = st.slider(
+        label="Typical Electric Vehicle Efficiency",
+        min_value=0.60, max_value=0.95, step=0.005,
+        value=default_inputs['vehicle_elec_eff'],
+        format="%.3f",
+        help="Drivetrain efficiency of a battery-electric vehicle (60-95 %)."
+    )
+
+with col3:
+    utility_ice_elec_eff = st.slider(
+        label="Typical Utility Generation Efficiency",
+        min_value=0.30, max_value=0.60, step=0.005,
+        value=default_inputs['utility_ice_elec_eff'],
+        format="%.3f",
+        help="Average efficiency of fossil-fired power plants (30-60 %)."
+    )
+
+# --------------------------------------------------------------
+# 3. Re-build mix_inputs with the live slider values
+# --------------------------------------------------------------
+mix_inputs = {
+    'total_energy_quads'       : 77.10,
+    'petroleum_fraction'       : .354,
+    'gas_fraction'             : .336,
+    'coal_fraction'            : .081,
+    'petroleum_trans_fraction' : .696,
+    'petroleum_heating_fraction': .296,
+    'petroleum_elec_fraction'   : .008,
+    'gas_trans_fraction'       : .040,
+    'gas_heating_fraction'     : .560,
+    'gas_elec_fraction'        : .400,
+    'coal_trans_fraction'      : 0.0,
+    'coal_heating_fraction'    : .114,
+    'coal_elec_fraction'       : .886,
+    # ---- user-controlled values ----
+    'vehicle_ice_eff'          : vehicle_ice_eff,
+    'vehicle_elec_eff'         : vehicle_elec_eff,
+    'utility_ice_elec_eff'     : utility_ice_elec_eff,
+    # ---- unchanged defaults ----
+    'petroleum_heating_eff'    : 1.000,
+    'gas_heating_eff'          : 1.000,
+    'coal_heating_eff'         : 1.000,
+    'elec_heating_eff'         : 1.000,
+    'ele_elec_eff'             : 1.000,
+}
+
+# --------------------------------------------------------------
+# 4. Re-calculate the downgrade ratio (cached for speed)
+# --------------------------------------------------------------
+@st.cache_data
+def get_efficiency_downgrade(_mix):
+    # Import inside the cached function so Streamlit can serialize it
+    from efficiency_downgrade import calculate_efficiency_downgrade
+    return calculate_efficiency_downgrade(_mix)
+
+efficiency_downgrade_ratio = get_efficiency_downgrade(mix_inputs)
+
+# --------------------------------------------------------------
+# 5. Show the live result (optional but handy)
+# --------------------------------------------------------------
+st.metric(
+    label="Fossil-to-Electric Efficiency Downgrade Ratio",
+    value=f"{efficiency_downgrade_ratio:.4f}"
+)
+
+# --------------------------------------------------------------
+# 6. Merge the live value back into the master inputs dict
+# --------------------------------------------------------------
+default_inputs['efficiency_downgrade'] = efficiency_downgrade_ratio
+
 
 # Define labels with units
 input_labels = {
@@ -304,6 +400,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
