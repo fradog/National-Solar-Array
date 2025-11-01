@@ -36,8 +36,6 @@ mix_inputs = {
     'ele_elec_eff': 1.000
 }
 
-ff_dg_ratio = calculate_efficiency_downgrade(mix_inputs)
-
 st.title("National Solar Array Bond Initiative")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Welcome to my National Solar Array (with battery storage) financial simulation. \
@@ -400,6 +398,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
