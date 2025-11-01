@@ -132,10 +132,8 @@ mix_inputs = {
 # --------------------------------------------------------------
 # 4. Re-calculate the downgrade ratio (cached for speed)
 # --------------------------------------------------------------
-@st.cache_data
+
 def get_efficiency_downgrade(_mix):
-    # Import inside the cached function so Streamlit can serialize it
-    from efficiency_downgrade import calculate_efficiency_downgrade
     return calculate_efficiency_downgrade(_mix)
 
 efficiency_downgrade_ratio = get_efficiency_downgrade(mix_inputs)
@@ -374,6 +372,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
