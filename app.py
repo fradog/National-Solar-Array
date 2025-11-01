@@ -138,7 +138,7 @@ mix_inputs = {
     'elec_heating_eff'         : 1.000,
     'elec_elec_eff'             : 1.000,
 }
-
+"""
 # --- TEMPORARY DEBUG (remove later) ---
 st.subheader("🔍 Debug: mix_inputs Check")
 st.write("All keys:", sorted(mix_inputs.keys()))
@@ -149,7 +149,7 @@ if 'elec_elec_eff' in mix_inputs:
 else:
     st.error("❌ Key missing – check your dict!")
 # --- END DEBUG ---
-
+"""
 # --------------------------------------------------------------
 # 4. Re-calculate the downgrade ratio (NO CACHING, NO WRAPPER)
 # --------------------------------------------------------------
@@ -389,6 +389,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
