@@ -130,16 +130,12 @@ mix_inputs = {
 }
 
 # --------------------------------------------------------------
-# 4. Re-calculate the downgrade ratio (cached for speed)
+# 4. Re-calculate the downgrade ratio (NO CACHING, NO WRAPPER)
 # --------------------------------------------------------------
-
-def get_efficiency_downgrade(_mix):
-    return calculate_efficiency_downgrade(_mix)
-
-efficiency_downgrade_ratio = get_efficiency_downgrade(mix_inputs)
+efficiency_downgrade_ratio = calculate_efficiency_downgrade(mix_inputs)
 
 # --------------------------------------------------------------
-# 5. Show the live result (optional but handy)
+# 5. Show the live result
 # --------------------------------------------------------------
 st.metric(
     label="Fossil-to-Electric Efficiency Downgrade Ratio",
@@ -372,6 +368,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
