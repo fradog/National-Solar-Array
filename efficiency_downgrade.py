@@ -41,19 +41,13 @@ def calculate_efficiency_downgrade(mix_inputs):
     pet_dg = (pet_ice_downgrade + pet_heating_downgrade + pet_elec_downgrade)
     gas_dg = (gas_ice_downgrade + gas_heating_downgrade + gas_elec_downgrade)
     coal_dg = (coal_trans_downgrade + coal_heating_downgrade + coal_elec_downgrade)
-    print(pet_dg)
     dg = pet_dg + gas_dg + coal_dg
-    print("Total downgrade (quads):", dg)
-    
     dg_ratio = dg / mix_inputs['total_energy_quads']
-    print("Downgrade ratio:", dg_ratio)
-    
     return dg_ratio
 
-# Call the function to see the output
-result = calculate_efficiency_downgrade(mix_inputs)
-print("Returned result:", result)
+
 
     
 
                                                                                                   
+
