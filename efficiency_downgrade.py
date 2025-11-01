@@ -45,9 +45,35 @@ def calculate_efficiency_downgrade(mix_inputs):
     dg_ratio = dg / mix_inputs['total_energy_quads']
     return dg_ratio
 
-
-
+# Add this at the bottom of efficiency_downgrade.py
+if __name__ == "__main__":
+    # Only runs when you execute the file directly
+    test_inputs = {
+        'total_energy_quads': 77.10,
+        'petroleum_fraction': .459,
+        'gas_fraction': .436,
+        'coal_fraction': .105,
+        'petroleum_trans_fraction': .696,
+        'petroleum_heating_fraction': .296,
+        'petroleum_elec_fraction': .008,
+        'gas_trans_fraction': .040,
+        'gas_heating_fraction': .560,
+        'gas_elec_fraction': .400,
+        'coal_trans_fraction': 0.0,
+        'coal_heating_fraction': .114,
+        'coal_elec_fraction': .886,
+        'vehicle_ice_eff': .200,
+        'vehicle_elec_eff': .800,
+        'utility_ice_elec_eff': .370,
+        'petroleum_heating_eff': 1.000,
+        'gas_heating_eff': 1.000,
+        'coal_heating_eff': 1.000,
+        'elec_heating_eff': 1.000,
+        'ele_elec_eff': 1.000
+    }
+    print("Test result:", calculate_efficiency_downgrade(test_inputs))
     
 
                                                                                                   
+
 
