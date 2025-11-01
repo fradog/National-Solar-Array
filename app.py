@@ -10,7 +10,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
-from efficiency_downgrade import calculate_efficiency_downgrade
 import importlib
 import sys
 
@@ -391,6 +390,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
