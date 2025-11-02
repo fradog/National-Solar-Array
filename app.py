@@ -88,8 +88,6 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          f"of 20/85 or 0.24 times that of the original ICE vehicle."
          f"I also assume also that electric heating and fossil heating are both delivering their energy to heat exhangers equally."
          f"This is conservative as it assumes 100% combustion efficiency." 
-         f"Based on the Fossil to Electric Efficiency Downgrade Ratio shown below, I estimate that to do the same work at the end user would require "
-         f"<b>{target_energy_quads:.2f} quads ({target_energy_twh:,.0f} teraWatthours)</b> of electrical energy."
          f"</span>",
          unsafe_allow_html=True)
 
@@ -405,6 +403,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
