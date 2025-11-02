@@ -29,8 +29,7 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
                  consistent with national security goals. As such it is funded by either a portion of our national budget or by a Bond initiative, or a \
                      combination of both. Another key premise is that the energy is sold to users at the current national average price for electricity.\
                          At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
-                             competitive investment opportunities in any arena. Of course this is a hypothetical exercise meant to explore the potential \
-                             benefits of an entirely solar sourced grid. In a real scenario, other renewables and nuclear will relax the energy required from solar alone. \
+                             competitive investment opportunities in any arena. \
                              See for yourself, play with the inputs and observe their effects. Enjoy \
                                  the realization that we can actually solve the Climate Crisis and not only improve our childrens futures \
                                      but become financially secure and energy independent while doing so."
@@ -82,7 +81,7 @@ default_inputs.update({
 # --------------------------------------------------------------
 st.subheader("Fossil-to-Electric Efficiency Assumptions")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
-         f"I calculate a ratio that is divided into the annual end use sector energy consumption from a recent year (2023). "
+         f"I calculate a ratio that is divided into the annual fossil fueled energy consumption from a recent year (2023). "
          f"The result is the energy that would hypothetically be consumed by end use sectors if all energy supply is electrified"
          f" as would be the case for a 100% solar generated energy supply. It is a lesser amount of energy due to the efficiency"
          f" gains as combustion based energy conversion is replaced by direct solar to grid and by battery electric vehicles."
@@ -90,10 +89,6 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          f" of 20/85 or 0.24 times that of the original ICE vehicle."
          f" I also assume also that electric heating and fossil heating are both delivering their energy to heat exhangers equally."
          f" This is conservative as it assumes 100% combustion efficiency."
-         f" If one is really paying close attention they'd see that upstream of end use sector energy is a total amount of energy"
-         f" that also includes losses at electricity generationg power plants, and total energy was actually 93.6 quads in 2023."
-         f" That's thanks to 59% losses at these plants. I do not count this in the energy required from the array, because those losses are eliminated in an all solar"
-         f" scenario."
          f"</span>",
          unsafe_allow_html=True)
 
@@ -284,9 +279,9 @@ target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 st.header("System Size")
 #st.write("System Target Energy Production: 13,100 teraWatthours")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
-         f"In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. "
-         f"After the efficiency improvement of direct transmission from solar PV conversion, "
-         f"I estimate that to do the same work at the end user would require "
+         f"The SolarSystem Shown here is that which is required to replace fossil fueled energy in 2023, 77.1 quads (22,596 teraWatthours) \
+         The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the systme. If these are upgraded or added \
+         to that would reduce the size of the array assuming total U.S> consumotion remains level over the life of the system."
          f"<b>{target_energy_quads:.2f} quads ({target_energy_twh:,.0f} teraWatthours)</b> of electrical energy."
          f"</span>",
          unsafe_allow_html=True)
@@ -409,6 +404,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
