@@ -285,10 +285,10 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          In theory they could be left as is, but next gen nuclear offers local energy density for extreme local demands like those of future AI training datacenters."
          f"</span>",
          unsafe_allow_html=True)
-st.write(f"Target Energy: {target_energy_twh:,.0f} teraWatthours")
-st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
+st.write(f"Target Annual Energy: {target_energy_twh:,.0f} teraWatthours")
+st.write(f"System Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Note: if Annual Energy is different than target energy, adjust Capacity Factor or Target Capacity"
+         "Note: if System Annual Energy is different than Target Annual Energy, adjust Capacity Factor or Target Capacity"
          "</span>",
     unsafe_allow_html=True)
 st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
@@ -405,6 +405,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
