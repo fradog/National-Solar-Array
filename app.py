@@ -84,8 +84,8 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          f"The result is the energy that would hypothetically be consumed by end use sectors if all energy supply is electrified"
          f" as would be the case for a 100% solar generated energy supply. It is a lesser amount of energy due to the efficiency"
          f" gains as combustion based energy conversion is replaced by direct solar to grid and by battery electric vehicles."
-         f"For example, a 20% efficient ICE vehicle when replaced by a 85% electric vehicle represents a consumed energy"
-         f"of 20/85 or 0.24 times that of the original ICE vehicle."
+         f" For example, a 20% efficient ICE vehicle when replaced by a 85% efficient electric vehicle represents a consumed energy"
+         f" of 20/85 or 0.24 times that of the original ICE vehicle."
          f" I also assume also that electric heating and fossil heating are both delivering their energy to heat exhangers equally."
          f" This is conservative as it assumes 100% combustion efficiency." 
          f"</span>",
@@ -403,6 +403,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
