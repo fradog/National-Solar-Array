@@ -280,8 +280,9 @@ st.header("System Size")
 #st.write("System Target Energy Production: 13,100 teraWatthours")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          f"The size of the solar system represented here is that which is required to replace fossil fueled energy in 2023, 77.1 quads (22,596 teraWatthours). \
-         The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the systme. If these are upgraded or added \
-         to, those additions would reduce the size of the array assuming total U.S consumption remains level over the life of the system."
+         The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the system. If these are upgraded or added \
+         to, those additions would reduce the size of the array assuming total U.S consumption remains level over the life of the system.\
+         In theory they could be left as is, but next gen nuclear offers local energy density for extreme local demands like those of future AI training datacenters."
          f"<b>{target_energy_quads:.2f} quads ({target_energy_twh:,.0f} teraWatthours)</b> of electrical energy."
          f"</span>",
          unsafe_allow_html=True)
@@ -404,6 +405,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
