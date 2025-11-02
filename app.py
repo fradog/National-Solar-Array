@@ -260,13 +260,15 @@ bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=inputs['project_lifespan'])
+target_energy_q = (efficiency_downgrage_ratio * mix_inputs['total_energy_quads'])
+target_energy_tWh = target_energy_q * 293.07
 
 # Display results
 st.header("System Size")
-st.write("System Target Energy Production: 13,100 teraWatthours")
+#st.write("System Target Energy Production: 13,100 teraWatthours")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. After the efficiency improvement of \
-         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require 44.7 quads (13,100 tWh) of electrical energy."
+         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require {target_energy_q:.2f}quads {target_energy_twh:,.0f}teraWatthours) of electrical energy."
          "</span>",
     unsafe_allow_html=True)
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
@@ -388,6 +390,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
