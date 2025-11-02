@@ -29,7 +29,9 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
                  consistent with national security goals. As such it is funded by either a portion of our national budget or by a Bond initiative, or a \
                      combination of both. Another key premise is that the energy is sold to users at the current national average price for electricity.\
                          At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
-                             competitive investment opportunities in any arena. See for yourself, play with the inputs and observe their effects. Enjoy \
+                             competitive investment opportunities in any arena. Of course this is a hypothetical exercise menat to explore the potential \
+                             benefits of an entirely solar sourced grid. In a real scenario, other renewables and nuclear will relax the energy required from solar alone. \
+                             See for yourself, play with the inputs and observe their effects. Enjoy \
                                  the realization that we can actually solve the Climate Crisis and not only improve our childrens futures \
                                      but become financially secure and energy independent while doing so."
                                      "</span>",
@@ -403,6 +405,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
