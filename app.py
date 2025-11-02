@@ -89,7 +89,11 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          f" For example, a 20% efficient ICE vehicle when replaced by a 85% efficient electric vehicle represents a consumed energy"
          f" of 20/85 or 0.24 times that of the original ICE vehicle."
          f" I also assume also that electric heating and fossil heating are both delivering their energy to heat exhangers equally."
-         f" This is conservative as it assumes 100% combustion efficiency." 
+         f" This is conservative as it assumes 100% combustion efficiency."
+         f" If one is really paying close attention they'd see that upstream of end use sector energy is a total amount of energy"
+         f" that also includes losses at electricity generationg power plants, and total energy was actually 92.6 quads in 2023."
+         f" That's thanks to 59% losses at these plants. I do not count this in the energy required from the array, because those losses are eliminated in an all solar"
+         f" scenario."
          f"</span>",
          unsafe_allow_html=True)
 
@@ -405,6 +409,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
