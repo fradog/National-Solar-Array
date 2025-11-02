@@ -26,12 +26,12 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Welcome to my National Solar Array (with battery storage) financial simulation. \
          It's purpose is to illustrate that such a massive effort to achieve Net Zero in the US by around 2035-2037 (depending on how soon we can start), \
              has a significant positive financial impact with no one left behind. The premise is that the array is part of a nationalized grid project and the energy produced is \
-                 consistent with national security goals. As such it is funded by either a portion of our national budget or by a Bond initiative, or a \
+                 consistent with national security goals. As such it is funded by either a portion of our national budget or by a bond initiative, or a \
                      combination of both. Another key premise is that the energy is sold to users at the current national average price for electricity.\
                          At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
                              competitive investment opportunities in any arena. \
                              See for yourself, play with the inputs and observe their effects. Enjoy \
-                                 the realization that we can actually solve the Climate Crisis and not only improve our childrens futures \
+                                 the realization that we can actually solve the Climate Crisis and not only improve our children's futures \
                                      but become financially secure and energy independent while doing so."
                                      "</span>",
                                 unsafe_allow_html=True)
@@ -405,6 +405,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
