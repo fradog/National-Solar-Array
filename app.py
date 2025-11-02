@@ -260,17 +260,22 @@ bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=inputs['project_lifespan'])
-target_energy_q = (efficiency_downgrage_ratio * mix_inputs['total_energy_quads'])
-target_energy_tWh = target_energy_q * 293.07
+
+# --- NEW: Calculate target energy with efficiency downgrade ---
+target_energy_quads = efficiency_downgrade_ratio * mix_inputs['total_energy_quads']
+target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
+# --- END NEW ---
 
 # Display results
 st.header("System Size")
 #st.write("System Target Energy Production: 13,100 teraWatthours")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. After the efficiency improvement of \
-         direct transmission from solar PV conversion, I estimate that to do the same work at the end user would require {target_energy_q:.2f}quads {target_energy_twh:,.0f}teraWatthours) of electrical energy."
-         "</span>",
-    unsafe_allow_html=True)
+st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
+         f"In 2023 end use sectors in the U.S. consumed 74.7 quads (21,877 tWh) of energy in the forms of heat and electricity. "
+         f"After the efficiency improvement of direct transmission from solar PV conversion, "
+         f"I estimate that to do the same work at the end user would require "
+         f"<b>{target_energy_quads:.2f} quads ({target_energy_twh:,.0f} teraWatthours)</b> of electrical energy."
+         f"</span>",
+         unsafe_allow_html=True)
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Note: if Annual Energy is different than target energy, adjust Capacity Factor or Target Capacity"
@@ -390,6 +395,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
