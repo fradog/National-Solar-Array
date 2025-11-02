@@ -157,13 +157,7 @@ efficiency_downgrade_ratio = calculate_efficiency_downgrade(mix_inputs)
 # --------------------------------------------------------------
 # 5. Show the live result
 # --------------------------------------------------------------
-st.write(
-    f"<div style='font-size:0.85rem; margin-top:-10px;'>"
-    f"<strong>Fossil-to-Electric Efficiency Downgrade Ratio:</strong> "
-    f"{efficiency_downgrade_ratio:.4f}"
-    f"</div>",
-    unsafe_allow_html=True
-)
+st.write(f"Fossil to Electric Efficiency Downgrade Ratio: {efficiency_downgrade_ratio:,.3f}")
 
 # --------------------------------------------------------------
 # 6. Merge the live value back into the master inputs dict
@@ -398,6 +392,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
