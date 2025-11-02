@@ -283,9 +283,9 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the system. If these are upgraded or added \
          to, those additions would reduce the size of the array assuming total U.S consumption remains level over the life of the system.\
          In theory they could be left as is, but next gen nuclear offers local energy density for extreme local demands like those of future AI training datacenters."
-         f"<b>{target_energy_quads:.2f} quads ({target_energy_twh:,.0f} teraWatthours)</b> of electrical energy."
          f"</span>",
          unsafe_allow_html=True)
+st.write(f"Target Energy: {target_energy_twh:,.0f} teraWatthours")
 st.write(f"Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Note: if Annual Energy is different than target energy, adjust Capacity Factor or Target Capacity"
@@ -405,6 +405,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
