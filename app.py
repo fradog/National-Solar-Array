@@ -9,7 +9,7 @@ Created on Tues Oct 28 15:03:29 2025
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_funding_mix, calculate_metrics
+from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
 import importlib
 import sys
 
@@ -267,10 +267,7 @@ for param, value in default_inputs.items():
 annual_energy_goal, required_area = target_total_energy(inputs)
 bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
-# ----- NEW: Cumulative post-debt cash flow ---------------------------------
-from solar_model import cumulative_post_debt_cash_flow   # <-- new import
 cum_post_debt_df = cumulative_post_debt_cash_flow(cash_flows_df)
-# -------------------------------------------------------------------------
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=inputs['project_lifespan'])
 
@@ -420,6 +417,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
