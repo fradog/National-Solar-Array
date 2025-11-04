@@ -267,6 +267,10 @@ for param, value in default_inputs.items():
 annual_energy_goal, required_area = target_total_energy(inputs)
 bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
+# ----- NEW: Cumulative post-debt cash flow ---------------------------------
+from solar_model import cumulative_post_debt_cash_flow   # <-- new import
+cum_post_debt_df = cumulative_post_debt_cash_flow(cash_flows_df)
+# -------------------------------------------------------------------------
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=inputs['project_lifespan'])
 
@@ -391,6 +395,17 @@ fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstandi
                title="National Solar Array Cummulative Balance")
 st.plotly_chart(fig2)
 
+# Plot 4: Cumulative Post-Debt Cash Flow
+fig4 = px.line(
+    cum_post_debt_df,
+    x='Year',
+    y='Cumulative Post-Debt Cash Flow ($B)',
+    title='Cumulative Post-Debt Cash Flow Over Project Lifetime',
+    labels={'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Cash Flow ($B)'}
+)
+fig4.update_layout(hovermode='x unified')
+st.plotly_chart(fig4, use_container_width=True)
+
 # Plot 3: Emissions Reduction
 emissions_data = []
 displaceable_emissions = inputs['us_emissions_tons'] * inputs['displaceable_proportion']
@@ -405,6 +420,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
