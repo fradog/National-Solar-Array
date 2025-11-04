@@ -176,6 +176,20 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
         data['Investor Total Cash Flow ($)'].append(investor_cash_flow)
     
     return pd.DataFrame(data)
+# ----------------------------------------------------------------------
+# Add this function near the other helpers (anywhere in the file)
+# ----------------------------------------------------------------------
+def cumulative_post_debt_cash_flow(cash_flows_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns a DataFrame with the cumulative sum of *Cash Flow Post-Debt*.
+    Units stay in **$B** (same as the original column).
+    """
+    df = cash_flows_df[['Year']].copy()
+    df['Cumulative Post-Debt Cash Flow ($B)'] = (
+        cash_flows_df['Cash Flow Post-Debt ($B)'].cumsum()
+    )
+    return df
+
 
 def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
     us_adult_population = inputs['us_adult_population']
@@ -242,3 +256,4 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
