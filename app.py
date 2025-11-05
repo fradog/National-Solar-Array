@@ -360,7 +360,7 @@ with col_b:
     )
     st.metric(
         "PV of Total Energy",
-        f"{lcoe['PV of Total Energy (kWh)'] / 1e12:,.2f} TWh"
+        f"{lcoe['PV of Total Energy (kWh)'] / 1e9:,.2f} TWh"
     )
 
 # Display results
@@ -558,6 +558,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
