@@ -211,8 +211,8 @@ def calculate_lcoe(
     grid_maintenance = inputs['grid_maintenance']
     capacity_factor = inputs['capacity_factor']
     degradation_rate = inputs['degradation_rate']
-    initial_capacity = inputs['initial_capacity'] / 1e9         # MW AC
-    target_capacity = inputs['target_capacity'] / 1e9           # MW AC
+    initial_capacity = inputs['initial_capacity'] / 1e3         # MW AC
+    target_capacity = inputs['target_capacity'] / 1e3           # MW AC
     buildout_years = 10
 
     # ------------------------------------------------------------------
@@ -247,8 +247,8 @@ def calculate_lcoe(
         effective_mw += new_mw
 
         # --- Costs ---
-        capex[t] = new_mw * 1e6 * capital_cost_per_kwp           # $ (kWp → W)
-        om_cost[t] = cumulative_mw * 1e6 * capital_cost_per_kwp * om_rate
+        capex[t] = new_mw * 1e3 * capital_cost_per_kwp           # $ (kWp → W)
+        om_cost[t] = cumulative_mw * 1e3 * capital_cost_per_kwp * om_rate
         grid_cost[t] = grid_maintenance
 
         # --- Generation ---
@@ -378,6 +378,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
