@@ -420,11 +420,11 @@ fig2 = px.line(
         'Cumulative Post-Debt Cash Flow ($B)'
     ],
     title="National Solar Array: Balances & Cumulative Cash Flow",
-    # labels={
-    #     'Reinvested Balance ($B)': 'Reinvested Balance ($B)',
-    #     'Outstanding Principal ($B)': 'Outstanding Principal ($B)',
-    #     'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Post-Debt Cash Flow ($B)'
-    # }
+    labels={
+        'Reinvested Balance ($B)': 'Reinvested Balance ($B)',
+        'Outstanding Principal ($B)': 'Outstanding Principal ($B)',
+        'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Post-Debt Cash Flow ($B)'
+    }
 )
 
 # Optional: make the cumulative line stand out
@@ -450,6 +450,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
