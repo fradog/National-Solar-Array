@@ -254,6 +254,105 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
 
+# ----------------------------------------------------------------------
+# LCOE – ALL UNITS: kW, kWh, $
+# ----------------------------------------------------------------------
+def calculate_lcoe_simple(
+    inputs: dict,
+    project_lifespan: int = 30,
+) -> dict:
+    """
+    Levelised Cost of Energy (LCOE) in **$/kWh**.
+
+    Returns a dictionary with:
+        LCOE ($/kWh)
+        PV of total costs ($)
+        PV of total energy (kWh)
+        Total CAPEX ($)
+        Total O&M + Grid ($)
+    """
+    # ------------------------------------------------------------------
+    # 1. Pull the numbers we need (all in base units)
+    # ------------------------------------------------------------------
+    discount_rate      = inputs['discount_rate']
+    capex_per_kw       = inputs['capital_cost_per_kwp']      # $/kWp  (kW-peak)
+    om_rate            = inputs['om_rate']                  # fraction of CAPEX per year
+    grid_maintenance   = inputs['grid_maintenance']          # $ per year
+    cf                 = inputs['capacity_factor']
+    deg_rate           = inputs['degradation_rate']
+    init_kw            = inputs['initial_capacity']          # kWp
+    target_kw          = inputs['target_capacity']           # kWp
+    buildout_years     = 10
+
+    # ------------------------------------------------------------------
+    # 2. Year-by-year arrays (kW, kWh, $)
+    # ------------------------------------------------------------------
+    annual_add_kw = (target_kw - init_kw) / buildout_years
+    hours_per_year = cf * 8760
+
+    capex_usd   = np.zeros(project_lifespan)   # $
+    om_usd      = np.zeros(project_lifespan)   # $
+    grid_usd    = np.zeros(project_lifespan)   # $
+    energy_kwh  = np.zeros(project_lifespan)   # kWh
+
+    cum_kw = init_kw          # cumulative installed capacity
+    eff_kw = init_kw          # capacity after degradation
+
+    for yr in range(project_lifespan):
+        # ---- planned capacity for this year (kW) ----
+        planned_kw = min(init_kw + annual_add_kw * min(yr, buildout_years - 1), target_kw)
+
+        # ---- degradation (applied to *existing* capacity) ----
+        eff_kw *= (1 - deg_rate)
+
+        # ---- shortfall → extra build-out (same logic as cash-flow) ----
+        target_kwh = planned_kw * hours_per_year
+        actual_kwh = eff_kw * hours_per_year
+        shortfall_kwh = max(target_kwh - actual_kwh, 0.0)
+        extra_kw = shortfall_kwh / hours_per_year
+
+        # ---- total new capacity this year ----
+        new_kw = (annual_add_kw if yr < buildout_years else 0.0) + extra_kw
+
+        # ---- update cumulative & effective ----
+        cum_kw += new_kw
+        eff_kw += new_kw
+
+        # ---- costs ($)
+        capex_usd[yr] = new_kw * capex_per_kw
+        om_usd[yr]    = cum_kw * capex_per_kw * om_rate
+        grid_usd[yr]  = grid_maintenance
+
+        # ---- generation (kWh) ----
+        energy_kwh[yr] = eff_kw * hours_per_year
+
+    total_cost_usd = capex_usd + om_usd + grid_usd
+
+    # ------------------------------------------------------------------
+    # 3. Present-value (discount factor for each year)
+    # ------------------------------------------------------------------
+    years = np.arange(1, project_lifespan + 1)
+    dfac  = 1.0 / (1.0 + discount_rate) ** years
+
+    pv_cost_usd   = np.sum(total_cost_usd * dfac)          # $
+    pv_energy_kwh = np.sum(energy_kwh * dfac)              # kWh
+
+    # ------------------------------------------------------------------
+    # 4. LCOE  ($/kWh)
+    # ------------------------------------------------------------------
+    lcoe_per_kwh = pv_cost_usd / pv_energy_kwh
+
+    # ------------------------------------------------------------------
+    # 5. Return everything in base units
+    # ------------------------------------------------------------------
+    return {
+        "LCOE ($/kWh)":           round(lcoe_per_kwh, 6),      # tiny number
+        "LCOE ($/MWh)":           round(lcoe_per_kwh * 1_000, 2),
+        "PV of Total Costs ($)":  pv_cost_usd,
+        "PV of Total Energy (kWh)": pv_energy_kwh,
+        "Total CAPEX ($)":        np.sum(capex_usd),
+        "Total O&M + Grid ($)":   np.sum(om_usd) + np.sum(grid_usd),
+    }
 
 
 
