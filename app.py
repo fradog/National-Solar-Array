@@ -240,9 +240,9 @@ inputs['initial_capacity'] = st.sidebar.slider(
 
 inputs['target_capacity'] = st.sidebar.slider(
     "Target Capacity (GWp)",
-    min_value=1000, max_value=10000,
+    min_value=3000, max_value=7000,
     value=int(default_inputs['target_capacity'] / 1e6),
-    step=100, format="%d GWp",
+    step=2, format="%d GWp",
     help="Total solar capacity goal to replace fossil energy (with efficiency gains)"
 ) * 1_000_000
 
@@ -522,6 +522,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
