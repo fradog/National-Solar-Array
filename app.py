@@ -228,15 +228,44 @@ input_labels = {
 st.sidebar.header("Input Parameters")
 inputs = {}
 
+# --- SYSTEM SCALE SLIDERS ---
+st.sidebar.subheader("System Scale")
+
+inputs['initial_capacity'] = st.sidebar.slider(
+    "Initial Capacity (GWp)",
+    min_value=0, max_value=1000,
+    value=int(default_inputs['initial_capacity'] / 1e6),
+    step=10, format="%d GWp"
+) * 1_000_000
+
+inputs['target_capacity'] = st.sidebar.slider(
+    "Target Capacity (GWp)",
+    min_value=1000, max_value=10000,
+    value=int(default_inputs['target_capacity'] / 1e6),
+    step=100, format="%d GWp",
+    help="Total solar capacity goal to replace fossil energy (with efficiency gains)"
+) * 1_000_000
+
+inputs['us_adult_population'] = st.sidebar.slider(
+    "US Adult Population (millions)",
+    min_value=200, max_value=300,
+    value=int(default_inputs['us_adult_population'] / 1e6),
+    step=1, format="%d M"
+) * 1_000_000
+# ---------------------------------
+
 for param, value in default_inputs.items():
     label = input_labels.get(param, param.replace('_', ' ').title())
 
     if isinstance(value, int):
+        if param in ['initial_capacity', 'target_capacity', 'us_adult_population']:
+            continue
+    # ... rest of text input logic ...
         # Determine step size based on parameter type
         step = (
             1 if param in ['project_lifespan', 'bond_term', 'carbon_tax_rate']
             else 1000 if 'investment' in param
-            else 10**6 if 'capacity' in param or 'population' in param
+            else 10**6 if 'population' in param
             else 10**9
         )
 
@@ -493,6 +522,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
