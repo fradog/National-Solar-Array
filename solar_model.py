@@ -179,6 +179,128 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
 # ----------------------------------------------------------------------
 # Add this function near the other helpers (anywhere in the file)
 # ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# LCOE CALCULATION – add this block to solar_model.py
+# ----------------------------------------------------------------------
+def calculate_lcoe(
+    inputs: dict,
+    cash_flows_df: pd.DataFrame,
+    project_lifespan: int = 30,
+    include_battery: bool = True,
+    battery_duration_hr: float = 2.0,
+) -> dict:
+    """
+    Compute Levelized Cost of Energy (LCOE) for the solar + optional battery system.
+    
+    Uses NREL-style methodology:
+        LCOE = (PV of total costs) / (PV of total generation)
+    
+    Returns a dictionary with:
+        - LCOE ($/MWh)
+        - Total PV Costs ($B)
+        - Total PV Energy (TWh)
+        - Breakdown components (CAPEX, O&M, Grid, etc.)
+    """
+    # ------------------------------------------------------------------
+    # 1. Pull key inputs
+    # ------------------------------------------------------------------
+    discount_rate = inputs['discount_rate']
+    capital_cost_per_kwp = inputs['capital_cost_per_kwp']      # $/kWp AC (includes battery if flag=True)
+    om_rate = inputs['om_rate']
+    grid_maintenance = inputs['grid_maintenance']
+    capacity_factor = inputs['capacity_factor']
+    degradation_rate = inputs['degradation_rate']
+    initial_capacity = inputs['initial_capacity'] / 1e6         # MW AC
+    target_capacity = inputs['target_capacity'] / 1e6           # MW AC
+    buildout_years = 10
+
+    # ------------------------------------------------------------------
+    # 2. Build year-by-year arrays (same logic you already use)
+    # ------------------------------------------------------------------
+    annual_addition_mw = (target_capacity - initial_capacity) / buildout_years
+    hours_per_year = capacity_factor * 8760
+
+    capex = np.zeros(project_lifespan)
+    om_cost = np.zeros(project_lifespan)
+    grid_cost = np.zeros(project_lifespan)
+    energy_mwh = np.zeros(project_lifespan)
+
+    cumulative_mw = initial_capacity
+    effective_mw = initial_capacity
+
+    for t in range(project_lifespan):
+        # --- Capacity build-out ---
+        planned_mw = min(initial_capacity + annual_addition_mw * min(t, buildout_years - 1), target_capacity)
+        target_energy_mwh = planned_mw * hours_per_year
+
+        # Degradation
+        effective_mw *= (1 - degradation_rate)
+        actual_energy_mwh = effective_mw * hours_per_year
+
+        # Shortfall → extra capacity (same logic as in your cash flow)
+        shortfall_mwh = target_energy_mwh - actual_energy_mwh
+        extra_mw = shortfall_mwh / hours_per_year if shortfall_mwh > 0 else 0.0
+
+        new_mw = (annual_addition_mw if t < buildout_years else 0.0) + extra_mw
+        cumulative_mw += new_mw
+        effective_mw += new_mw
+
+        # --- Costs ---
+        capex[t] = new_mw * 1e6 * capital_cost_per_kwp           # $ (kWp → W)
+        om_cost[t] = cumulative_mw * 1e6 * capital_cost_per_kwp * om_rate
+        grid_cost[t] = grid_maintenance
+
+        # --- Generation ---
+        energy_mwh[t] = effective_mw * hours_per_year
+
+    total_costs = capex + om_cost + grid_cost
+
+    # ------------------------------------------------------------------
+    # 3. Discount to Present Value
+    # ------------------------------------------------------------------
+    years = np.arange(1, project_lifespan + 1)
+    discount_factors = 1 / (1 + discount_rate) ** years
+
+    pv_costs = np.sum(total_costs * discount_factors)
+    pv_energy = np.sum(energy_mwh * discount_factors) / 1e6   # TWh
+
+    # ------------------------------------------------------------------
+    # 4. LCOE
+    # ------------------------------------------------------------------
+    lcoe = (pv_costs / 1e9) / pv_energy * 1e3   # $/MWh  (B$ / TWh → k$/MWh → $/MWh)
+
+    # ------------------------------------------------------------------
+    # 5. Optional: Split CAPEX into PV-only vs. Battery (for transparency)
+    # ------------------------------------------------------------------
+    if include_battery:
+        # Use NREL 2024 ATB Advanced average 2025–2035 (2-hr system)
+        # From earlier: PV ≈ $780/kW, Battery ≈ $353/kW → total $1,133/kW
+        # We'll assume your `capital_cost_per_kwp` already includes both.
+        # But we can estimate split:
+        avg_pv_capex = 780   # $/kW AC (Advanced avg 2025–2035)
+        battery_capex_per_kw = capital_cost_per_kwp - avg_pv_capex
+        battery_capex_per_kw = max(battery_capex_per_kw, 0)
+    else:
+        battery_capex_per_kw = 0.0
+
+    # ------------------------------------------------------------------
+    # 6. Return rich results
+    # ------------------------------------------------------------------
+    return {
+        'LCOE ($/MWh)': round(lcoe, 2),
+        'Total PV Costs ($B)': round(pv_costs / 1e9, 3),
+        'Total PV Energy (TWh)': round(pv_energy, 3),
+        'Total CAPEX ($B)': round(np.sum(capex) / 1e9, 3),
+        'Total O&M ($B)': round(np.sum(om_cost) / 1e9, 3),
+        'Total Grid Maintenance ($B)': round(np.sum(grid_cost) / 1e9, 3),
+        'Battery CAPEX per kW ($/kW)': round(battery_capex_per_kw, 0),
+        'PV-only CAPEX per kW ($/kW)': round(avg_pv_capex, 0),
+        'Assumed Battery Duration (hr)': battery_duration_hr,
+        'NREL ATB Reference': '2024 ATB Advanced Scenario (avg 2025–2035)',
+    }
+
+
 def cumulative_post_debt_cash_flow(cash_flows_df: pd.DataFrame) -> pd.DataFrame:
     """
     Returns a DataFrame with the cumulative sum of *Cash Flow Post-Debt*.
@@ -256,4 +378,5 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
