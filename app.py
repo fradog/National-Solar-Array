@@ -9,7 +9,16 @@ Created on Tues Oct 28 15:03:29 2025
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_lcoe, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
+from solar_model import (
+    target_total_energy,
+    calculate_bond_principal,
+    calculate_cash_flows,
+    cumulative_post_debt_cash_flow,
+    calculate_funding_mix,
+    calculate_metrics,
+    calculate_lcoe,                # <-- NEW
+)
+#from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_lcoe, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
 import importlib
 import sys
 
@@ -557,6 +566,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
