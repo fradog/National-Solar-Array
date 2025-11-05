@@ -336,6 +336,33 @@ target_energy_quads = efficiency_downgrade_ratio * mix_inputs['total_energy_quad
 target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # --- END NEW ---
 
+# --------------------------------------------------------------
+# LCOE (simple, base units)
+# --------------------------------------------------------------
+lcoe = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
+
+st.subheader("Levelised Cost of Energy (LCOE)")
+
+col_a, col_b = st.columns(2)
+with col_a:
+    st.metric(
+        "LCOE",
+        f"${lcoe['LCOE ($/kWh)']:.6f}/kWh"
+    )
+    st.caption(
+        f"→ **{lcoe['LCOE ($/MWh)']:.2f} $/MWh**  "
+        f"(NREL 2024 ATB Advanced ≈ 31 $/MWh for Class-5 + 2-hr BESS)"
+    )
+with col_b:
+    st.metric(
+        "PV of Total Costs",
+        f"${lcoe['PV of Total Costs ($)'] / 1e9:,.2f} B"
+    )
+    st.metric(
+        "PV of Total Energy",
+        f"{lcoe['PV of Total Energy (kWh)'] / 1e12:,.2f} TWh"
+    )
+
 # Display results
 st.header("System Size")
 #st.write("System Target Energy Production: 13,100 teraWatthours")
@@ -531,6 +558,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
