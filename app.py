@@ -16,7 +16,7 @@ from solar_model import (
     cumulative_post_debt_cash_flow,
     calculate_funding_mix,
     calculate_metrics,
-    calculate_lcoe,                # <-- NEW
+    calculate_lcoe_simple,                # <-- NEW
 )
 #from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_lcoe, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
 import importlib
@@ -558,6 +558,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
