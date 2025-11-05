@@ -399,7 +399,7 @@ fig4.update_layout(hovermode='x unified')
 st.plotly_chart(fig4, use_container_width=True)
 
 # Plot 2: Balance Trends
-fig2 = px.line(cash_flows_df, cum_post_debt_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)','Cumulative Post-Debt Cash Flow ($B)'],
+fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
                title="National Solar Array Cummulative Balance")
 st.plotly_chart(fig2)
 
@@ -417,6 +417,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
