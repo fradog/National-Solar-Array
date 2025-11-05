@@ -336,15 +336,6 @@ target_energy_quads = efficiency_downgrade_ratio * mix_inputs['total_energy_quad
 target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # --- END NEW ---
 
-# ---- Run the LCOE function ---------------------------------------
-lcoe_results = calculate_lcoe(
-    inputs=inputs,
-    cash_flows_df=cash_flows_df,
-    project_lifespan=30,
-    include_battery=True,          # set False if you ever model PV-only
-    battery_duration_hr=2.0,
-)
-
 # Display results
 st.header("System Size")
 #st.write("System Target Energy Production: 13,100 teraWatthours")
@@ -388,29 +379,54 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
     unsafe_allow_html=True)
 
 # ------------------------------------------------------------------
-# ---- LCOE OUTPUT SECTION -------------------------------------------------
+# LCOE SECTION – only here we convert to B$, GW, TWh
 # ------------------------------------------------------------------
 st.subheader("Levelized Cost of Energy (LCOE)")
-# ---- Pretty-print the dictionary ---------------------------------
-for key, val in lcoe_results.items():
-    # Format numbers nicely
-    if isinstance(val, (int, float)):
-        if "($/MWh)" in key or "($/kW)" in key:
-            st.metric(label=key, value=f"${val:,.2f}")
-        elif "($B)" in key or "($T)" in key:
-            st.metric(label=key, value=f"${val:,.3f}")
-        else:
-            st.metric(label=key, value=f"{val:,.2f}")
-    else:
-        st.write(f"**{key}**: {val}")
 
-# ---- Optional: quick comparison to NREL -------------------------
-nrel_benchmark = 31.0   # $/MWh – NREL 2024 ATB Advanced avg (Class 5, 2-hr)
-your_lcoe = lcoe_results["LCOE ($/MWh)"]
+lcoe_dict = calculate_lcoe(
+    inputs=inputs,
+    cash_flows_df=cash_flows_df,
+    project_lifespan=30,
+    include_battery=True,
+    battery_duration_hr=2.0,
+)
+
+# ---- Helper: pretty formatting ------------------------------------------------
+def fmt_usd(val, threshold_b=1e9):
+    if val >= threshold_b:
+        return f"${val/1e9:,.2f} B"
+    return f"${val:,.0f}"
+
+def fmt_energy(kwh):
+    twh = kwh / 1e12
+    return f"{twh:,.3f} TWh"
+
+def fmt_capacity(kw):
+    gw = kw / 1e6
+    return f"{gw:,.1f} GW"
+
+# ---- Show each metric ---------------------------------------------------------
+st.metric("LCOE", f"${lcoe_dict['LCOE ($/MWh)']:,.2f}/MWh")
+
+st.metric("Total PV Costs", fmt_usd(lcoe_dict['Total PV Costs ($)']))
+st.metric("Total PV Energy", fmt_energy(lcoe_dict['Total PV Energy (kWh)']))
+
+st.metric("Total CAPEX", fmt_usd(lcoe_dict['Total CAPEX ($)']))
+st.metric("Total O&M", fmt_usd(lcoe_dict['Total O&M ($)']))
+st.metric("Total Grid Maintenance", fmt_usd(lcoe_dict['Total Grid ($)']))
+
+st.metric("Battery CAPEX per kW", f"${lcoe_dict['Battery CAPEX per kW ($/kW)']:,.0f}/kW")
+st.metric("PV-only CAPEX per kW", f"${lcoe_dict['PV-only CAPEX per kW ($/kW)']:,.0f}/kW")
+
+st.caption(f"Battery duration: {lcoe_dict['Battery Duration (hr)']} hr")
+
+# ---- NREL benchmark -----------------------------------------------------------
+nrel_benchmark = 31.0
+your_lcoe = lcoe_dict['LCOE ($/MWh)']
 st.caption(
-    f"*NREL 2024 ATB Advanced benchmark = ${nrel_benchmark:.1f}/MWh*  → "
-    f"**Your model is {your_lcoe - nrel_benchmark:+.2f} $/MWh** "
-    f"({(your_lcoe/nrel_benchmark-1)*100:+.1f} %)."
+    f"*NREL 2024 ATB Advanced (Class 5, 2-hr) = ${nrel_benchmark:.1f}/MWh* → "
+    f"**Your model: {your_lcoe - nrel_benchmark:+.2f} $/MWh** "
+    f"({(your_lcoe/nrel_benchmark-1)*100:+.1f} %)"
 )
 
 st.header("Financial Metrics")
@@ -566,6 +582,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
