@@ -9,7 +9,7 @@ Created on Tues Oct 28 15:03:29 2025
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
+from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_lcoe, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
 import importlib
 import sys
 
@@ -327,6 +327,15 @@ target_energy_quads = efficiency_downgrade_ratio * mix_inputs['total_energy_quad
 target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # --- END NEW ---
 
+# ---- Run the LCOE function ---------------------------------------
+lcoe_results = calculate_lcoe(
+    inputs=inputs,
+    cash_flows_df=cash_flows_df,
+    project_lifespan=30,
+    include_battery=True,          # set False if you ever model PV-only
+    battery_duration_hr=2.0,
+)
+
 # Display results
 st.header("System Size")
 #st.write("System Target Energy Production: 13,100 teraWatthours")
@@ -368,6 +377,32 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Note: Carbon tax revenue applied as cash flow to reduce bond principal."
          "</span>",
     unsafe_allow_html=True)
+
+# ------------------------------------------------------------------
+# ---- LCOE OUTPUT SECTION -------------------------------------------------
+# ------------------------------------------------------------------
+st.subheader("Levelized Cost of Energy (LCOE)")
+# ---- Pretty-print the dictionary ---------------------------------
+for key, val in lcoe_results.items():
+    # Format numbers nicely
+    if isinstance(val, (int, float)):
+        if "($/MWh)" in key or "($/kW)" in key:
+            st.metric(label=key, value=f"${val:,.2f}")
+        elif "($B)" in key or "($T)" in key:
+            st.metric(label=key, value=f"${val:,.3f}")
+        else:
+            st.metric(label=key, value=f"{val:,.2f}")
+    else:
+        st.write(f"**{key}**: {val}")
+
+# ---- Optional: quick comparison to NREL -------------------------
+nrel_benchmark = 31.0   # $/MWh – NREL 2024 ATB Advanced avg (Class 5, 2-hr)
+your_lcoe = lcoe_results["LCOE ($/MWh)"]
+st.caption(
+    f"*NREL 2024 ATB Advanced benchmark = ${nrel_benchmark:.1f}/MWh*  → "
+    f"**Your model is {your_lcoe - nrel_benchmark:+.2f} $/MWh** "
+    f"({(your_lcoe/nrel_benchmark-1)*100:+.1f} %)."
+)
 
 st.header("Financial Metrics")
 st.dataframe(cash_flows_df.round(2))
@@ -522,6 +557,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
