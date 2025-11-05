@@ -21,6 +21,21 @@ from efficiency_downgrade import calculate_efficiency_downgrade
 
 # --- END RELOAD BLOCK ---
 
+# === SHARED PLOTLY LAYOUT FOR LEGEND ABOVE CHART ===
+LEGEND_ABOVE = dict(
+    legend=dict(
+        title=None,
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="right",
+        x=1
+    ),
+    hovermode='x unified'
+)
+# ===================================================
+
+
 st.title("National Solar Array Bond Initiative")
 st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          "Welcome to my National Solar Array (with battery storage) financial simulation. \
@@ -390,9 +405,19 @@ st.write(
 
 
 # Plot 1: Financial Metrics
-fig1 = px.line(cash_flows_df, x='Year', y=['Cash Flow Pre-Debt ($B)', 'Cash Flow Post-Debt ($B)', 'Total Costs ($B)', 'Total Inflows ($B)', 'Interest Payment ($B)', 'Principal Payment ($B)', 'Dividends ($B)', 'Amount Paid Out ($B)'],
-               title="Financial Metrics Over Time")
-st.plotly_chart(fig1)
+fig1 = px.line(
+    cash_flows_df,
+    x='Year',
+    y=[
+        'Cash Flow Pre-Debt ($B)', 'Cash Flow Post-Debt ($B)',
+        'Total Costs ($B)', 'Total Inflows ($B)',
+        'Interest Payment ($B)', 'Principal Payment ($B)',
+        'Dividends ($B)', 'Amount Paid Out ($B)'
+    ],
+    title="Financial Metrics Over Time"
+)
+fig1.update_layout(**LEGEND_ABOVE)  # ← NEW
+st.plotly_chart(fig1, use_container_width=True)
 
 # # Plot 4: Cumulative Post-Debt Cash Flow
 # fig4 = px.line(
@@ -411,6 +436,30 @@ st.plotly_chart(fig1)
 # st.plotly_chart(fig2)
 
 # Plot 2: Balance Trends + Cumulative Post-Debt Cash Flow
+# fig2 = px.line(
+#     cash_flows_df,
+#     x='Year',
+#     y=[
+#         'Reinvested Balance ($B)',
+#         'Outstanding Principal ($B)',
+#         'Cumulative Post-Debt Cash Flow ($B)'
+#     ],
+#     title="National Solar Array: Balances & Cumulative Cash Flow",
+#     labels={
+#         'Reinvested Balance ($B)': 'Reinvested Balance ($B)',
+#         'Outstanding Principal ($B)': 'Outstanding Principal ($B)',
+#         'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Post-Debt Cash Flow ($B)'
+#     }
+# )
+
+# # Optional: make the cumulative line stand out
+# fig2.for_each_trace(lambda t: t.update(line=dict(width=3)) if 'Cumulative' in t.name else None)
+
+# fig2.update_layout(
+#     hovermode='x unified',
+#     legend=dict(title=None, orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+# )
+# st.plotly_chart(fig2, use_container_width=True)
 fig2 = px.line(
     cash_flows_df,
     x='Year',
@@ -419,21 +468,10 @@ fig2 = px.line(
         'Outstanding Principal ($B)',
         'Cumulative Post-Debt Cash Flow ($B)'
     ],
-    title="National Solar Array: Balances & Cumulative Cash Flow",
-    labels={
-        'Reinvested Balance ($B)': 'Reinvested Balance ($B)',
-        'Outstanding Principal ($B)': 'Outstanding Principal ($B)',
-        'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Post-Debt Cash Flow ($B)'
-    }
+    title="National Solar Array: Balances & Cumulative Cash Flow"
 )
-
-# Optional: make the cumulative line stand out
 fig2.for_each_trace(lambda t: t.update(line=dict(width=3)) if 'Cumulative' in t.name else None)
-
-fig2.update_layout(
-    hovermode='x unified',
-    legend=dict(title=None, orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-)
+fig2.update_layout(**LEGEND_ABOVE)  # ← already correct
 st.plotly_chart(fig2, use_container_width=True)
 
 # Plot 3: Emissions Reduction
@@ -447,9 +485,15 @@ for t in range(10):
         'Total Emissions (B tons)': remaining_emissions / 10**9
     })
 emissions_df = pd.DataFrame(emissions_data)
-fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
-               title='CO2 Emissions Reduction Over Time')
-st.plotly_chart(fig3)
+fig3 = px.line(
+    emissions_df,
+    x='Year',
+    y=['Total Emissions (B tons)'],
+    title='CO2 Emissions Reduction Over Time'
+)
+fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
+st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
