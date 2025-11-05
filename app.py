@@ -267,6 +267,13 @@ for param, value in default_inputs.items():
 annual_energy_goal, required_area = target_total_energy(inputs)
 bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
+
+# ---- NEW: add cumulative post-debt cash flow directly to the main DF ----
+cash_flows_df['Cumulative Post-Debt Cash Flow ($B)'] = (
+    cash_flows_df['Cash Flow Post-Debt ($B)'].cumsum()
+)
+# ------------------------------------------------------------------------
+
 cum_post_debt_df = cumulative_post_debt_cash_flow(cash_flows_df)
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=inputs['project_lifespan'])
@@ -387,21 +394,47 @@ fig1 = px.line(cash_flows_df, x='Year', y=['Cash Flow Pre-Debt ($B)', 'Cash Flow
                title="Financial Metrics Over Time")
 st.plotly_chart(fig1)
 
-# Plot 4: Cumulative Post-Debt Cash Flow
-fig4 = px.line(
-    cum_post_debt_df,
-    x='Year',
-    y=['Cumulative Post-Debt Cash Flow ($B)'],
-    title='Cumulative Post-Debt Cash Flow Over Project Lifetime',
-    labels={'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Cash Flow ($B)'}
-)
-fig4.update_layout(hovermode='x unified')
-st.plotly_chart(fig4, use_container_width=True)
+# # Plot 4: Cumulative Post-Debt Cash Flow
+# fig4 = px.line(
+#     cum_post_debt_df,
+#     x='Year',
+#     y=['Cumulative Post-Debt Cash Flow ($B)'],
+#     title='Cumulative Post-Debt Cash Flow Over Project Lifetime',
+#     labels={'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Cash Flow ($B)'}
+# )
+# fig4.update_layout(hovermode='x unified')
+# st.plotly_chart(fig4, use_container_width=True)
 
-# Plot 2: Balance Trends
-fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
-               title="National Solar Array Cummulative Balance")
-st.plotly_chart(fig2)
+# # Plot 2: Balance Trends
+# fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
+#                title="National Solar Array Cummulative Balance")
+# st.plotly_chart(fig2)
+
+# Plot 2: Balance Trends + Cumulative Post-Debt Cash Flow
+fig2 = px.line(
+    cash_flows_df,
+    x='Year',
+    y=[
+        'Reinvested Balance ($B)',
+        'Outstanding Principal ($B)',
+        'Cumulative Post-Debt Cash Flow ($B)'
+    ],
+    title="National Solar Array: Balances & Cumulative Cash Flow",
+    labels={
+        'Reinvested Balance ($B)': 'Reinvested Balance ($B)',
+        'Outstanding Principal ($B)': 'Outstanding Principal ($B)',
+        'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Post-Debt Cash Flow ($B)'
+    }
+)
+
+# Optional: make the cumulative line stand out
+fig2.for_each_trace(lambda t: t.update(line=dict(width=3)) if 'Cumulative' in t.name else None)
+
+fig2.update_layout(
+    hovermode='x unified',
+    legend=dict(title=None, orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+)
+st.plotly_chart(fig2, use_container_width=True)
 
 # Plot 3: Emissions Reduction
 emissions_data = []
@@ -417,6 +450,7 @@ emissions_df = pd.DataFrame(emissions_data)
 fig3 = px.line(emissions_df, x='Year', y=['Total Emissions (B tons)'], 
                title='CO2 Emissions Reduction Over Time')
 st.plotly_chart(fig3)
+
 
 
 
