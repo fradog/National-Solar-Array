@@ -347,7 +347,7 @@ col_a, col_b = st.columns(2)
 with col_a:
     st.metric(
         "LCOE",
-        f"${lcoe['LCOE ($/kWh)']:.6f}/kWh"
+        f"${lcoe['LCOE ($/kWh)']:.3f}/kWh"
     )
     st.caption(
         f"→ **{lcoe['LCOE ($/MWh)']:.2f} $/MWh**  "
@@ -356,11 +356,11 @@ with col_a:
 with col_b:
     st.metric(
         "PV of Total Costs",
-        f"${lcoe['PV of Total Costs ($)'] / 1e9:,.2f} B"
+        f"${lcoe['PV of Total Costs ($)'] / 1e9:,.0f} B"
     )
     st.metric(
         "PV of Total Energy",
-        f"{lcoe['PV of Total Energy (kWh)'] / 1e9:,.2f} TWh"
+        f"{lcoe['PV of Total Energy (kWh)'] / 1e9:,.0f} TWh"
     )
 
 # Display results
@@ -558,6 +558,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
