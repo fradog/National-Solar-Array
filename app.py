@@ -16,7 +16,7 @@ from solar_model import (
     cumulative_post_debt_cash_flow,
     calculate_funding_mix,
     calculate_metrics,
-    calculate_lcoe_simple,                # <-- NEW
+    calculate_lcoe_simple, calculate_lcoe_nrel_style, calculate_lcoe_diagnostic,                # <-- NEW
 )
 #from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_lcoe, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
 import importlib
@@ -339,7 +339,18 @@ target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # --------------------------------------------------------------
 # LCOE (simple, base units)
 # --------------------------------------------------------------
-lcoe = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
+lcoe = calculate_lcoe_simple(inputs)
+lcoe_nrel = calculate_lcoe_nrel_style(
+    capex_per_kw=inputs['capital_cost_per_kwp'],
+    fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
+    cf=inputs['capacity_factor'],
+    wacc_real=inputs['discount_rate']
+)
+
+diag = calculate_lcoe_diagnostic(inputs)
+
+
+#lcoe = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
 
 st.subheader("Levelised Cost of Energy (LCOE)")
 
@@ -558,6 +569,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
