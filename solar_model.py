@@ -200,7 +200,16 @@ def calculate_lcoe_simple(inputs: dict, project_lifespan: int = 30) -> dict:
     annual_add_kw = (target_kw - init_kw) / buildout_years
     hours_per_year = cf * 8760
 
-    capex_usd   = np.zeros(project_lifespan)
+    # In calculate_lcoe_simple — replace the CAPEX part
+    capex_usd = np.zeros(project_lifespan)
+
+    for yr in range(project_lifespan):
+        if yr < 10:
+            new_kw_this_year = annual_add_kw
+        else:
+            new_kw_this_year = 0.0
+        capex_usd[yr] = new_kw_this_year * capex_per_kw
+        
     om_usd      = np.zeros(project_lifespan)
     grid_usd    = np.zeros(project_lifespan)
     energy_kwh  = np.zeros(project_lifespan)
@@ -220,8 +229,7 @@ def calculate_lcoe_simple(inputs: dict, project_lifespan: int = 30) -> dict:
         energy_kwh[yr] = eff_kw * hours_per_year
 
     total_cost_usd = capex_usd + om_usd + grid_usd
-    years = np.arange(1, project_lifespan + 1)
-    dfac  = 1.0 / (1.0 + discount_rate) ** years
+    dfac = 1.0 / (1.0 + discount_rate) ** np.arange(1, project_lifespan + 1)
 
     pv_cost_usd   = np.sum(total_cost_usd * dfac)
     pv_energy_kwh = np.sum(energy_kwh * dfac)
@@ -399,6 +407,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
