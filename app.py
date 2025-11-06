@@ -1,38 +1,36 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tues Oct 28 15:03:29 2025
-
-@author: dhfra
+National Solar Array Bond Initiative
+Cleaned & Optimized: Nov 06, 2025
 """
 
-# app.py
 import numpy as np
 import numpy_financial as npf
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from solar_model import (
-    target_total_energy,
-    calculate_bond_principal,
-    calculate_cash_flows,
-    cumulative_post_debt_cash_flow,
-    calculate_funding_mix,
-    calculate_metrics,
-    calculate_lcoe_simple, calculate_lcoe_nrel_style, calculate_lcoe_diagnostic,                # <-- NEW
-)
-#from solar_model import target_total_energy, calculate_bond_principal, calculate_cash_flows, calculate_lcoe, cumulative_post_debt_cash_flow, calculate_funding_mix, calculate_metrics
 import importlib
 import sys
 
-# --- FORCE CACHE CLEAR & MODULE RELOAD (for GitHub web editing) ---
-st.cache_data.clear()  # Clears all cached data (including stale function results)
+# --- RELOAD MODULES (for live editing) ---
+st.cache_data.clear()
 if 'efficiency_downgrade' in sys.modules:
     importlib.reload(sys.modules['efficiency_downgrade'])
 from efficiency_downgrade import calculate_efficiency_downgrade
 
-# --- END RELOAD BLOCK ---
+# --- IMPORT MODEL FUNCTIONS ---
+from solar_model import (
+    target_total_energy,
+    calculate_bond_principal,
+    calculate_cash_flows,
+    calculate_funding_mix,
+    calculate_metrics,
+    calculate_lcoe_simple,
+    calculate_lcoe_nrel_style,
+    calculate_lcoe_diagnostic,
+)
 
-# === SHARED PLOTLY LAYOUT FOR LEGEND ABOVE CHART ===
+# --- PLOTLY LEGEND ABOVE CHART ---
 LEGEND_ABOVE = dict(
     legend=dict(
         title=None,
@@ -44,36 +42,34 @@ LEGEND_ABOVE = dict(
     ),
     hovermode='x unified'
 )
-# ===================================================
 
-
+# =============================================
+# PAGE TITLE & DESCRIPTION
+# =============================================
 st.title("National Solar Array Bond Initiative")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Welcome to my National Solar Array (with battery storage) financial simulation. \
-         It's purpose is to illustrate that such a massive effort to achieve Net Zero in the US by around 2035-2037 (depending on how soon we can start), \
-             has a significant positive financial impact with no one left behind. The premise is that the array is part of a nationalized grid project and the energy produced is \
-                 consistent with national security goals. As such it is funded by either a portion of our national budget or by a bond initiative, or a \
-                     combination of both. Another key premise is that the energy is sold to users at the current national average price for electricity.\
-                         At this price this simulation shows how the revenues generated over the lifetime of the Array are indeed massive and exceed most \
-                             competitive investment opportunities in any arena. \
-                             See for yourself, play with the inputs and observe their effects. Enjoy \
-                                 the realization that we can actually solve the Climate Crisis and not only improve our children's futures \
-                                     but become financially secure and energy independent while doing so."
-                                     "</span>",
-                                unsafe_allow_html=True)
+st.write(
+    "<span style='font-size:0.85rem; font-style:italic;'>"
+    "This simulation shows that a massive solar + storage array can achieve U.S. Net Zero by ~2035–2037, "
+    "with strong financial returns, energy independence, and no one left behind. Funded via bonds or budget, "
+    "revenues at current electricity prices far exceed costs. Play with inputs and see the impact."
+    "</span>",
+    unsafe_allow_html=True
+)
 
-# Define default inputs
+# =============================================
+# DEFAULT INPUTS
+# =============================================
 default_inputs = {
     'project_lifespan': 30,
-    'initial_capacity': 230 * 10**6,  # kWp
-    'target_capacity': 5498 * 10**6,  # kWp
+    'initial_capacity': 230_000_000,      # kWp
+    'target_capacity': 5_498_000_000,     # kWp
     'capacity_factor': 0.2700,
     'revenue_per_kwh': 0.16,
     'avoided_fuel_per_kwh': 0.03,
     'efficiency_downgrade': 0.10,
-    'capital_cost_per_kwp': 1.73 * 10**3,
+    'capital_cost_per_kwp': 1_730,
     'om_rate': 0.01,
-    'grid_maintenance': 50 * 10**9,
+    'grid_maintenance': 50_000_000_000,
     'discount_rate': 0.04,
     'degradation_rate': 0.007,
     'reinvestment_percentage': 0.5,
@@ -81,375 +77,121 @@ default_inputs = {
     'bond_interest_rate': 0.025,
     'bond_term': 10,
     'dividend_percentage': 0.5,
-    'individual_investment': 10000,
-    'us_adult_population': 258 * 10**6,
+    'individual_investment': 10_000,
+    'us_adult_population': 258_000_000,
     'participation_rate_low': 0.05,
     'participation_rate_mid': 0.10,
     'participation_rate_high': 0.15,
     'carbon_tax_rate': 100,
-    'us_emissions_tons': 4.7 * 10**9,
+    'us_emissions_tons': 4_700_000_000,
     'carbon_tax_effective_rate': 0.75,
     'displaceable_proportion': 1.0,
     'panel_rating': 700 / 2.57,
-    'coverage_ratio': 0.4
+    'coverage_ratio': 0.4,
+    'vehicle_ice_eff': 0.200,
+    'vehicle_elec_eff': 0.800,
+    'utility_ice_elec_eff': 0.370,
 }
-# --------------------------------------------------------------
-# 1. Extend default_inputs with the three new efficiencies
-# --------------------------------------------------------------
-default_inputs.update({
-    'vehicle_ice_eff'       : 0.200,   # 20 %  (typical ICE car)
-    'vehicle_elec_eff'      : 0.800,   # 80 %  (EV drivetrain)
-    'utility_ice_elec_eff'  : 0.370,   # 37 %  (average fossil-fired plant)
-})
 
-# --------------------------------------------------------------
-# 2. UI – three new sliders (place them wherever you like)
-# --------------------------------------------------------------
+# =============================================
+# EFFICIENCY SLIDERS
+# =============================================
 st.subheader("Fossil-to-Electric Efficiency Assumptions")
-st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
-         f"I calculate a ratio that is divided into the annual fossil fueled energy consumption from a recent year (2023). "
-         f"The result is the energy that would hypothetically be consumed by end use sectors if all energy supply is electrified"
-         f" as would be the case for a 100% solar generated energy supply. It is a lesser amount of energy due to the efficiency"
-         f" gains as combustion based energy conversion is replaced by direct solar to grid and by battery electric vehicles."
-         f" For example, a 20% efficient ICE vehicle when replaced by a 85% efficient electric vehicle represents a consumed energy"
-         f" of 20/85 or 0.24 times that of the original ICE vehicle."
-         f" I also assume also that electric heating and fossil heating are both delivering their energy to heat exhangers equally."
-         f" This is conservative as it assumes 100% combustion efficiency."
-         f"</span>",
-         unsafe_allow_html=True)
+st.write(
+    "<span style='font-size:0.85rem; font-style:italic;'>"
+    "Electrifying energy use reduces total consumption due to efficiency gains. "
+    "This model adjusts 2023 fossil energy (77.1 quads) downward accordingly."
+    "</span>",
+    unsafe_allow_html=True
+)
 
 col1, col2, col3 = st.columns(3)
-
 with col1:
-    vehicle_ice_eff = st.slider(
-        label="Average ICE Vehicle Efficiency",
-        min_value=0.10, max_value=0.35, step=0.005,
-        value=default_inputs['vehicle_ice_eff'],
-        format="%.3f",
-        help="Typical thermal efficiency of gasoline/diesel vehicles (10-35 %)."
-    )
-
+    vehicle_ice_eff = st.slider("ICE Vehicle Efficiency", 0.10, 0.35, default_inputs['vehicle_ice_eff'], 0.005, format="%.3f")
 with col2:
-    vehicle_elec_eff = st.slider(
-        label="Typical Electric Vehicle Efficiency",
-        min_value=0.60, max_value=0.95, step=0.005,
-        value=default_inputs['vehicle_elec_eff'],
-        format="%.3f",
-        help="Drivetrain efficiency of a battery-electric vehicle (60-95 %)."
-    )
-
+    vehicle_elec_eff = st.slider("EV Drivetrain Efficiency", 0.60, 0.95, default_inputs['vehicle_elec_eff'], 0.005, format="%.3f")
 with col3:
-    utility_ice_elec_eff = st.slider(
-        label="Typical Utility Generation Efficiency",
-        min_value=0.30, max_value=0.60, step=0.005,
-        value=default_inputs['utility_ice_elec_eff'],
-        format="%.3f",
-        help="Average efficiency of fossil-fired power plants (30-60 %)."
-    )
+    utility_ice_elec_eff = st.slider("Fossil Plant Efficiency", 0.30, 0.60, default_inputs['utility_ice_elec_eff'], 0.005, format="%.3f")
 
-# --------------------------------------------------------------
-# 3. Re-build mix_inputs with the live slider values
-# --------------------------------------------------------------
+# Rebuild mix_inputs with live values
 mix_inputs = {
-    'total_energy_quads'       : 77.10,
-    'petroleum_fraction': .459,
-    'gas_fraction': .436,
-    'coal_fraction': .105,
-    'petroleum_trans_fraction' : .696,
-    'petroleum_heating_fraction': .296,
-    'petroleum_elec_fraction'   : .008,
-    'gas_trans_fraction'       : .040,
-    'gas_heating_fraction'     : .560,
-    'gas_elec_fraction'        : .400,
-    'coal_trans_fraction'      : 0.0,
-    'coal_heating_fraction'    : .114,
-    'coal_elec_fraction'       : .886,
-    # ---- user-controlled values ----
-    'vehicle_ice_eff'          : vehicle_ice_eff,
-    'vehicle_elec_eff'         : vehicle_elec_eff,
-    'utility_ice_elec_eff'     : utility_ice_elec_eff,
-    # ---- unchanged defaults ----
-    'petroleum_heating_eff'    : 1.000,
-    'gas_heating_eff'          : 1.000,
-    'coal_heating_eff'         : 1.000,
-    'elec_heating_eff'         : 1.000,
-    'elec_elec_eff'             : 1.000,
+    'total_energy_quads': 77.10,
+    'petroleum_fraction': .459, 'gas_fraction': .436, 'coal_fraction': .105,
+    'petroleum_trans_fraction': .696, 'petroleum_heating_fraction': .296, 'petroleum_elec_fraction': .008,
+    'gas_trans_fraction': .040, 'gas_heating_fraction': .560, 'gas_elec_fraction': .400,
+    'coal_trans_fraction': 0.0, 'coal_heating_fraction': .114, 'coal_elec_fraction': .886,
+    'vehicle_ice_eff': vehicle_ice_eff,
+    'vehicle_elec_eff': vehicle_elec_eff,
+    'utility_ice_elec_eff': utility_ice_elec_eff,
+    'petroleum_heating_eff': 1.0, 'gas_heating_eff': 1.0, 'coal_heating_eff': 1.0,
+    'elec_heating_eff': 1.0, 'elec_elec_eff': 1.0,
 }
 
-# --- TEMPORARY DEBUG (remove later) ---
-# st.subheader("Debug: mix_inputs Check")
-# st.write("All keys:", sorted(mix_inputs.keys()))
-# st.write("'elec_elec_eff' exists?", 'elec_elec_eff' in mix_inputs)
-# st.write("Its value:", mix_inputs.get('elec_elec_eff', 'MISSING!'))
-# if 'elec_elec_eff' in mix_inputs:
-#     st.success("Key is good – function should work!")
-# else:
-#     st.error("Key missing – check your dict!")
-# --- END DEBUG ---
-
-# --------------------------------------------------------------
-# 4. Re-calculate the downgrade ratio (NO CACHING, NO WRAPPER)
-# --------------------------------------------------------------
+# Calculate efficiency downgrade
 efficiency_downgrade_ratio = calculate_efficiency_downgrade(mix_inputs)
-
-# --------------------------------------------------------------
-# 5. Show the live result
-# --------------------------------------------------------------
-st.write(f"Fossil to Electric Efficiency Downgrade Ratio: {efficiency_downgrade_ratio:,.3f}")
-
-# --------------------------------------------------------------
-# 6. Merge the live value back into the master inputs dict
-# --------------------------------------------------------------
 default_inputs['efficiency_downgrade'] = efficiency_downgrade_ratio
+st.write(f"**Efficiency Downgrade Ratio**: {efficiency_downgrade_ratio:,.3f}")
 
-
-# Define labels with units
-input_labels = {
-    'project_lifespan': 'Project Lifespan (years)',
-    'initial_capacity': 'Initial Capacity (kWp)',
-    'target_capacity': 'Target Capacity (kWp)',
-    'capacity_factor': 'Capacity Factor',
-    'revenue_per_kwh': 'Revenue per kWh ($/kWh)',
-    'avoided_fuel_per_kwh': 'Avoided Fuel Cost per kWh ($/kWh)',
-    'efficiency_downgrade': 'Fossil Fuel Combustion Efficiency downgrade',
-    'capital_cost_per_kwp': 'Capital Cost per kWp ($/kWp)',
-    'om_rate': 'O&M Rate',
-    'grid_maintenance': 'Grid Maintenance ($)',
-    'discount_rate': 'Discount Rate',
-    'degradation_rate': 'Degradation Rate',
-    'reinvestment_percentage': 'Reinvestment Percentage',
-    'investment_return_rate': 'Investment Return Rate',
-    'bond_interest_rate': 'Bond Interest Rate',
-    'bond_term': 'Bond Term (years)',
-    'dividend_percentage': 'Dividend Percentage',
-    'individual_investment': 'Individual Investment ($)',
-    'us_adult_population': 'US Adult Population (M)',
-    'participation_rate_low': 'Participation Rate Low',
-    'participation_rate_mid': 'Participation Rate Mid',
-    'participation_rate_high': 'Participation Rate High',
-    'carbon_tax_rate': 'Carbon Tax Rate ($/ton)',
-    'us_emissions_tons': 'US Emissions (tons)',
-    'carbon_tax_effective_rate': 'Carbon Tax Effective Rate',
-    'displaceable_proportion': 'Displaceable Proportion',
-    'panel_rating': 'Panel Rating (W/m^2)',
-    'coverage_ratio': 'Coverage Ratio'
-}
-
-# Sidebar for inputs
+# =============================================
+# SIDEBAR INPUTS
+# =============================================
 st.sidebar.header("Input Parameters")
 inputs = {}
 
-# --- SYSTEM SCALE SLIDERS ---
+# System Scale
 st.sidebar.subheader("System Scale")
+inputs['initial_capacity'] = st.sidebar.slider("Initial Capacity (GWp)", 0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
+inputs['target_capacity'] = st.sidebar.slider("Target Capacity (GWp)", 3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
+inputs['us_adult_population'] = st.sidebar.slider("US Adult Population (M)", 200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
 
-inputs['initial_capacity'] = st.sidebar.slider(
-    "Initial Capacity (GWp)",
-    min_value=0, max_value=1000,
-    value=int(default_inputs['initial_capacity'] / 1e6),
-    step=10, format="%d GWp"
-) * 1_000_000
-
-inputs['target_capacity'] = st.sidebar.slider(
-    "Target Capacity (GWp)",
-    min_value=3000, max_value=7000,
-    value=int(default_inputs['target_capacity'] / 1e6),
-    step=2, format="%d GWp",
-    help="Total solar capacity goal to replace fossil energy (with efficiency gains)"
-) * 1_000_000
-
-inputs['us_adult_population'] = st.sidebar.slider(
-    "US Adult Population (millions)",
-    min_value=200, max_value=300,
-    value=int(default_inputs['us_adult_population'] / 1e6),
-    step=1, format="%d M"
-) * 1_000_000
-# ---------------------------------
-
+# All other inputs
 for param, value in default_inputs.items():
-    label = input_labels.get(param, param.replace('_', ' ').title())
+    if param in inputs: continue
+    label = param.replace('_', ' ').title()
 
     if isinstance(value, int):
-        if param in ['initial_capacity', 'target_capacity', 'us_adult_population']:
-            continue
-    # ... rest of text input logic ...
-        # Determine step size based on parameter type
-        step = (
-            1 if param in ['project_lifespan', 'bond_term', 'carbon_tax_rate']
-            else 1000 if 'investment' in param
-            else 10**6 if 'population' in param
-            else 10**9
-        )
-
-        # Display formatted value with commas in the text input
-        formatted_value = f"{value:,}"
-        user_input = st.sidebar.text_input(label, formatted_value)
-
-        # Remove commas and convert to int safely
+        step = 1 if param in ['project_lifespan', 'bond_term'] else 1_000_000
+        formatted = f"{value:,}"
+        user = st.sidebar.text_input(label, formatted)
         try:
-            cleaned_value = int(user_input.replace(',', '').strip())
-            inputs[param] = cleaned_value
-        except ValueError:
-            # Fall back to the default if input is invalid
-            st.sidebar.warning(f"Invalid value for {label}. Using default: {value:,}")
+            inputs[param] = int(user.replace(',', '').strip())
+        except:
+            st.sidebar.warning(f"Invalid {label}. Using default.")
             inputs[param] = value
+    else:
+        step = 0.0001 if param in ['capacity_factor', 'degradation_rate', 'om_rate'] else 0.001
+        max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0
+        fmt = "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate'] else "%.3f"
+        inputs[param] = st.sidebar.slider(label, 0.0, max_val, value, step, format=fmt)
 
-    elif isinstance(value, float):
-        # Define step and range based on parameter type
-        step = (
-            0.0001 if param in ['capacity_factor', 'degradation_rate', 'om_rate']
-            else 0.001
-        )
-        max_val = (
-            value * 1.5 if param in ['capacity_factor']
-            else value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion', 'participation_rate_high']
-            else 1.0
-        )
-        format_str = (
-            "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate']
-            else "%.3f"
-        )
-
-        inputs[param] = st.sidebar.slider(
-            label,
-            min_value=0.0 if param not in ['capacity_factor'] else 0.15,
-            max_value=max_val,
-            value=value,
-            step=step,
-            format=format_str
-        )
-
-# In sidebar
+# =============================================
+# LCOE VALIDATION MODE (ONE TOGGLE)
+# =============================================
 validate_lcoe = st.sidebar.checkbox("LCOE Validation Mode (Zero extras + Unlevered NPV)")
 
 if validate_lcoe:
-    # Override inputs
-    inputs['avoided_fuel_per_kwh'] = 0.0
-    inputs['carbon_tax_rate'] = 0.0
-    inputs['grid_maintenance'] = 0.0
-    inputs['degradation_rate'] = 0.0
-    inputs['bond_interest_rate'] = 0.0  # no debt cost
-    inputs['bond_term'] = 0
-
-# Calculate results
-annual_energy_goal, required_area = target_total_energy(inputs)
-bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
-cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
-
-# ---- NEW: add cumulative post-debt cash flow directly to the main DF ----
-cash_flows_df['Cumulative Post-Debt Cash Flow ($B)'] = (
-    cash_flows_df['Cash Flow Post-Debt ($B)'].cumsum()
-)
-# ------------------------------------------------------------------------
-
-cum_post_debt_df = cumulative_post_debt_cash_flow(cash_flows_df)
-funding_mix_df = calculate_funding_mix(inputs, bond_principal)
-metrics = calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=inputs['project_lifespan'])
-
-# --- NEW: Calculate target energy with efficiency downgrade ---
-target_energy_quads = efficiency_downgrade_ratio * mix_inputs['total_energy_quads']
-target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
-# --- END NEW ---
-
-# In app.py — after cash_flows_df
-# Extract only solar operating cash flow
-solar_revenue = cash_flows_df['Total Inflows ($B)'] * 1e9  # only electricity sales
-solar_costs   = (
-    (cash_flows_df['Total Costs ($B)'] * 1e9)
-    - cash_flows_df['Interest Payment ($B)'] * 1e9
-    - cash_flows_df['Principal Payment ($B)'] * 1e9
-)
-
-solar_cash_flow = solar_revenue - solar_costs
-solar_npv = npf.npv(inputs['discount_rate'], solar_cash_flow) / 1e12
-
-# --------------------------------------------------------------
-# LCOE (simple, base units)
-# --------------------------------------------------------------
-
-# lcoe_nrel = calculate_lcoe_nrel_style(
-#     capex_per_kw=inputs['capital_cost_per_kwp'],
-#     fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
-#     cf=inputs['capacity_factor'],
-#     wacc_real=inputs['discount_rate']
-# )
-
-# diag = calculate_lcoe_diagnostic(inputs)
-
-# --------------------------------------------------------------
-# LCOE DISPLAY – FIXED
-# --------------------------------------------------------------
-lcoe_result = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
-
-st.subheader("Levelised Cost of Energy (LCOE)")
-
-col1, col2 = st.columns(2)
-with col1:
-    st.metric(
-        "LCOE",
-        f"${lcoe_result['LCOE ($/MWh)']:.2f}/MWh"
-    )
-    st.caption(
-        f"→ **{lcoe_result['LCOE ($/MWh)'] / 1000:.6f} $/kWh**"
-    )
-
-with col2:
-    st.metric("PV of Total Costs", f"${lcoe_result['PV Costs ($)'] / 1e9:,.2f} B")
-    st.metric("PV of Total Energy", f"{lcoe_result['PV Energy (TWh)']:.2f} TWh")
-
-# --------------------------------------------------------------
-# LCOE: FULL COMPARISON (Your Model vs. NREL ATB Style)
-# --------------------------------------------------------------
-st.markdown("---")
-st.subheader("Levelised Cost of Energy (LCOE)")
-
-# 1. Run your full model (with degradation)
-lcoe_full = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
-
-# After lcoe_full and cash_flows_df
-lcoe_energy = lcoe_full['PV Energy (TWh)'] * 1e9  # kWh
-cf_energy = np.sum(cash_flows_df['Total Inflows ($B)'] * 1e9 / inputs['revenue_per_kwh'])
-
-# LCOE VALIDATION — FINAL
-if st.sidebar.checkbox("LCOE Validation Mode", value=False):
-    # Zero extras
     for key in ['avoided_fuel_per_kwh', 'carbon_tax_rate', 'grid_maintenance', 'degradation_rate']:
         inputs[key] = 0.0
     inputs['bond_interest_rate'] = 0.0
     inputs['bond_term'] = 0
 
-    # Recalculate
-    bond_principal, _ = calculate_bond_principal(inputs)
-    cash_flows_df = calculate_cash_flows(inputs, bond_principal)
-    lcoe_full = calculate_lcoe_simple(inputs)
+# =============================================
+# CALCULATIONS
+# =============================================
+annual_energy_goal, required_area = target_total_energy(inputs)
+bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
+cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
+cash_flows_df['Cumulative Post-Debt Cash Flow ($B)'] = cash_flows_df['Cash Flow Post-Debt ($B)'].cumsum()
 
-    # Force revenue = LCOE
-    inputs['revenue_per_kwh'] = lcoe_full['LCOE ($/MWh)'] / 1000
+funding_mix_df = calculate_funding_mix(inputs, bond_principal)
+metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
 
-    # Rebuild cash flows with exact revenue
-    energy_kwh = np.array([
-        min(inputs['initial_capacity'] + (inputs['target_capacity'] - inputs['initial_capacity']) * min(yr+1, 10)/10, inputs['target_capacity'])
-        * inputs['capacity_factor'] * 8760
-        for yr in range(30)
-    ])
-    revenue_series = energy_kwh * inputs['revenue_per_kwh']
+# Target energy with efficiency
+target_energy_quads = efficiency_downgrade_ratio * 77.10
+target_energy_twh = target_energy_quads * 293.07
 
-    capex_series = np.zeros(30)
-    for yr in range(10):
-        capex_series[yr] = (inputs['target_capacity'] - inputs['initial_capacity']) / 10 * inputs['capital_cost_per_kwp']
-
-    om_series = np.zeros(30)
-    cum_kw = inputs['initial_capacity']
-    for yr in range(30):
-        if yr < 10:
-            cum_kw += (inputs['target_capacity'] - inputs['initial_capacity']) / 10
-        om_series[yr] = cum_kw * inputs['capital_cost_per_kwp'] * inputs['om_rate']
-
-    unlevered_cf = revenue_series - capex_series - om_series
-    unlevered_npv = npf.npv(inputs['discount_rate'], unlevered_cf) / 1e12
-
-    st.success(f"Validation Mode: Revenue = LCOE → Unlevered NPV = ${unlevered_npv:+.3f}T")
-
-# 2. Run NREL ATB-style (no degradation, instant build)
+# LCOE
+lcoe_full = calculate_lcoe_simple(inputs)
 nrel_lcoe = calculate_lcoe_nrel_style(
     capex_per_kw=inputs['capital_cost_per_kwp'],
     fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
@@ -457,298 +199,141 @@ nrel_lcoe = calculate_lcoe_nrel_style(
     wacc_real=inputs['discount_rate'],
     project_life=inputs['project_lifespan']
 )
+diag = calculate_lcoe_diagnostic(inputs)
 
-# 3. Run diagnostics
-diag = calculate_lcoe_diagnostic(inputs, project_lifespan=inputs['project_lifespan'])
+# =============================================
+# UNLEVERED NPV (EXACT MATCH WITH LCOE)
+# =============================================
+lifespan = inputs['project_lifespan']
+target_kw = inputs['target_capacity']
+init_kw = inputs['initial_capacity']
+capex_per_kw = inputs['capital_cost_per_kwp']
+om_rate = inputs['om_rate']
+cf = inputs['capacity_factor']
+hours = cf * 8760
 
-# --------------------------------------------------------------
-# DISPLAY
-# --------------------------------------------------------------
-col1, col2 = st.columns(2)
+# Build-out
+annual_add_kw = (target_kw - init_kw) / 10
+capex_series = np.array([annual_add_kw * capex_per_kw if yr < 10 else 0 for yr in range(lifespan)])
 
-with col1:
-    st.metric(
-        label="**Your Model (PV + Degradation)**",
-        value=f"${lcoe_full['LCOE ($/MWh)']:.2f}/MWh"
-    )
-    st.caption(
-        f"→ **{lcoe_full['LCOE ($/MWh)'] / 1000:.6f} $/kWh**"
-    )
+# O&M
+om_series = np.zeros(lifespan)
+cum_kw = init_kw
+for yr in range(lifespan):
+    if yr < 10:
+        cum_kw += annual_add_kw
+    om_series[yr] = cum_kw * capex_per_kw * om_rate
 
-with col2:
-    st.metric(
-        label="**NREL ATB Style (FCR, no deg.)**",
-        value=f"${nrel_lcoe:.2f}/MWh",
-        delta=f"{lcoe_full['LCOE ($/MWh)'] - nrel_lcoe:+.2f} $/MWh",
-        delta_color="inverse"
-    )
-    st.caption("Benchmark: excludes degradation & build-out")
-    
-
-st.metric("Solar-Only NPV (Unlevered)", f"${solar_npv:+.2f}T")
-st.caption(f"LCOE Energy: {lcoe_energy / 1e9:.2f} TWh | CF Energy: {cf_energy / 1e12:.2f} TWh")
-
-# --------------------------------------------------------------
-# DIAGNOSTIC TABLE
-# --------------------------------------------------------------
-st.markdown("#### Diagnostic Breakdown")
-diag_df = pd.DataFrame([
-    {
-        "Metric": "Total CAPEX",
-        "Value": f"${lcoe_full['Total CAPEX ($)'] / 1e9:,.2f} B",
-        "Per kW": f"${inputs['capital_cost_per_kwp']:,.0f}/kW"
-    },
-    {
-        "Metric": "PV of Total Costs",
-        "Value": f"${lcoe_full['PV Costs ($)'] / 1e9:,.2f} B",
-        "Per kW": f"${lcoe_full['PV Costs ($)'] / inputs['target_capacity']:,.0f}/kW"
-    },
-    {
-        "Metric": "PV of Total Energy",
-        "Value": f"{lcoe_full['PV Energy (TWh)']:.2f} TWh",
-        "Per Year": f"{lcoe_full['PV Energy (TWh)'] / inputs['project_lifespan']:.2f} TWh/yr"
-    },
-    {
-        "Metric": "Final Effective Capacity",
-        "Value": f"{diag['Final Eff Capacity (TW)']:.2f} TW",
-        "vs Target": f"{diag['Final Eff Capacity (TW)'] / (inputs['target_capacity']/1e9):.1%}"
-    },
-    {
-        "Metric": "Year 1 Energy",
-        "Value": f"{diag['Year 1 Energy (TWh)']:.2f} TWh",
-        "Expected": f"{inputs['target_capacity']/1e9 * inputs['capacity_factor'] * 8.76:.2f} TWh"
-    },
-    {
-        "Metric": "Year 30 Energy",
-        "Value": f"{diag['Year 30 Energy (TWh)']:.2f} TWh",
-        "vs Year 1": f"{diag['Year 30 Energy (TWh)'] / diag['Year 1 Energy (TWh)']:.1%}"
-    },
+# Energy
+energy_series = np.array([
+    min(init_kw + annual_add_kw * min(yr + 1, 10), target_kw) * hours
+    for yr in range(lifespan)
 ])
 
-st.dataframe(
-    diag_df,
-    use_container_width=True,
-    hide_index=True
-)
+# Revenue
+revenue_series = energy_series * inputs['revenue_per_kwh']
 
-# --------------------------------------------------------------
-# EXPLANATION
-# --------------------------------------------------------------
-st.markdown("""
-**Why the difference?**  
-Your model includes:
-- **0.5%/yr degradation** → energy declines over time
-- **10-year build-out** → early years have lower output
-- **O&M on cumulative capacity**
+# Unlevered cash flow
+unlevered_cf = revenue_series - capex_series - om_series
+unlevered_npv = npf.npv(inputs['discount_rate'], unlevered_cf) / 1e12
 
-NREL's FCR method assumes:
-- **Constant annual output**
-- **Instant full capacity**
-- **No degradation**
+# =============================================
+# DISPLAY: LCOE + VALIDATION
+# =============================================
+st.markdown("---")
+st.subheader("Levelised Cost of Energy (LCOE)")
 
-Your LCOE is **more realistic** for long-term planning.
-""")
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("**Your Model (PV + Degradation)**", f"${lcoe_full['LCOE ($/MWh)']:.2f}/MWh")
+    st.caption(f"→ {lcoe_full['LCOE ($/MWh)']/1000:.6f} $/kWh")
+with col2:
+    delta = lcoe_full['LCOE ($/MWh)'] - nrel_lcoe
+    st.metric("**NREL ATB Style (FCR, no deg.)**", f"${nrel_lcoe:.2f}/MWh", f"{delta:+.2f} $/MWh", delta_color="inverse")
 
-# Display results
+# Validation result
+if validate_lcoe:
+    inputs['revenue_per_kwh'] = lcoe_full['LCOE ($/MWh)'] / 1000
+    st.success(f"Validation Mode ON: Revenue = LCOE → **Unlevered NPV = ${unlevered_npv:+.3f}T**")
+else:
+    st.metric("Unlevered Solar NPV", f"${unlevered_npv:+.2f}T")
+
+# =============================================
+# DIAGNOSTIC TABLE
+# =============================================
+st.markdown("#### Diagnostic Breakdown")
+diag_df = pd.DataFrame([
+    {"Metric": "Total CAPEX", "Value": f"${lcoe_full['Total CAPEX ($)']/1e9:,.2f} B"},
+    {"Metric": "PV of Total Costs", "Value": f"${lcoe_full['PV Costs ($)']/1e9:,.2f} B"},
+    {"Metric": "PV of Total Energy", "Value": f"{lcoe_full['PV Energy (TWh)']:.2f} TWh"},
+    {"Metric": "Final Eff Capacity", "Value": f"{diag['Final Eff Capacity (GW)']:.2f} GW"},
+    {"Metric": "Year 1 Energy", "Value": f"{diag['Year 1 Energy (TWh)']:.2f} TWh"},
+    {"Metric": "Year 30 Energy", "Value": f"{diag['Year 30 Energy (TWh)']:.2f} TWh"},
+])
+st.dataframe(diag_df, use_container_width=True, hide_index=True)
+
+# =============================================
+# RESULTS
+# =============================================
 st.header("System Size")
-#st.write("System Target Energy Production: 13,100 teraWatthours")
-st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
-         f"The size of the solar system represented here is that which is required to replace fossil fueled energy in 2023, 77.1 quads (22,596 teraWatthours). \
-         The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the system. If these are upgraded or added \
-         to, those additions would reduce the size of the array assuming total U.S consumption remains level over the life of the system.\
-         In theory they could be left as is, but next gen nuclear offers local energy density for extreme local demands like those of future AI training datacenters."
-         f"</span>",
-         unsafe_allow_html=True)
-st.write(f"Target Annual Energy: {target_energy_twh:,.0f} teraWatthours")
-st.write(f"System Annual Energy: {annual_energy_goal:,.0f} teraWatthours")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Note: if System Annual Energy is different than Target Annual Energy, adjust Capacity Factor or Target Capacity"
-         "</span>",
-    unsafe_allow_html=True)
-st.write(f"Area Required: {required_area:,.0f} Sq.Mi. with coverage ratio of {inputs['coverage_ratio']:.2f}")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Note: typical coverage ratio for commercial bifacial single axis tracking panel installation is 0.40 to prevent self shading losses.\
-         Increasing this will have a detrimental effect on Capacity Factor. I estimate a change in coverage ratio from 0.40 to 0.50 to reduce \
-             capcity factor by about 3.7%."
-         "</span>",
-    unsafe_allow_html=True)
+st.write(f"**Target Annual Energy**: {target_energy_twh:,.0f} TWh")
+st.write(f"**System Annual Energy**: {annual_energy_goal:,.0f} TWh")
+st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage: {inputs['coverage_ratio']:.2f})")
 
 st.header("Bond Principal")
-st.write(f"Calculated Bond Principal: ${bond_principal / 10**9:.2f}B")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "The Bond Principal is essentially how much we would need to build the array, its associated storage, grid upgrades and grid maintenance.\
-         It is roughly on the order of one year's defense budget. Investors in this bond will see compound annual growth rates \
-         competitive with other much higher risk investments. \
-         Try moving the Reinvestment Percentage slider toward zero and push the Dividend Percentage slider toward one and watch the \
-         investor's balance syrocket. This simulation divides the net cash-flow-in into a mix of an amount paid out to investors as dividends \
-         and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
-         purpose in the interest of the nation."
-         "</span>",
-    unsafe_allow_html=True)
-st.write(f"Total Carbon Tax Revenue (10 years): ${carbon_tax_10yr / 10**9:.2f}B")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Note: Carbon tax revenue applied as cash flow to reduce bond principal."
-         "</span>",
-    unsafe_allow_html=True)
+st.write(f"**Bond Principal**: ${bond_principal/1e9:.2f}B")
+st.write(f"**Carbon Tax Revenue (10yr)**: ${carbon_tax_10yr/1e9:.2f}B")
 
-st.header("Financial Metrics")
-st.dataframe(cash_flows_df.round(2))
-
-st.header("Funding Mix")
-st.write("<span style='font-size:0.85rem; font-style:italic;'>"
-         "Shows funding sources for the reduced bond principal (after carbon tax revenue)."
-         "</span>",
-    unsafe_allow_html=True)
-st.dataframe(funding_mix_df.round(2))
-
-#st.header("Key Metrics")
-#metrics_df = pd.DataFrame([metrics]).round(2)
-#st.dataframe(metrics_df)
 st.header("Key Metrics")
-
-# Create dataframe and round values
 metrics_df = pd.DataFrame([metrics]).round(2)
-
-# Define your last column exactly as it appears
 last_col = "Individual Bond Investor Ending Balance ($)"
-
-# Build formatting dictionary for all numeric columns
-format_dict = {
-    col: "{:,.0f}" if col == last_col else "{:,.2f}"
-    for col in metrics_df.select_dtypes(include="number").columns
-}
-
-# Build styled DataFrame
+format_dict = {col: "{:,.0f}" if col == last_col else "{:,.2f}" for col in metrics_df.select_dtypes("number").columns}
 styled = (
     metrics_df.style
     .format(format_dict)
     .set_properties(**{"text-align": "right"}, subset=[last_col])
-    .set_table_styles(
-        [
-            {
-                "selector": "th",
-                "props": [
-                    ("white-space", "normal"),
-                    ("word-wrap", "break-word"),
-                    ("max-width", "150px"),
-                    ("text-align", "center"),
-                ],
-            },
-            {
-                "selector": "td",
-                "props": [
-                    ("white-space", "normal"),
-                    ("text-align", "right"),
-                ],
-            },
-        ]
-    )
-    # <<< NEW LINE – hides the index column >>>
-    .hide(axis="index")          # Streamlit ≥ 1.27
+    .set_table_styles([{"selector": "th, td", "props": [("text-align", "center"), ("white-space", "normal")]}])
+    .hide(axis="index")
 )
+st.write(f'<div style="overflow-x:auto;">{styled.to_html()}</div>', unsafe_allow_html=True)
 
-# Render styled DataFrame as HTML (fully respects CSS)
-st.write(
-    f'<div style="overflow-x:auto;">{styled.to_html()}</div>',
-    unsafe_allow_html=True
-)
+st.header("Funding Mix")
+st.dataframe(funding_mix_df.round(2))
 
-
-
-# Plot 1: Financial Metrics
+# =============================================
+# PLOTS
+# =============================================
+st.header("Financial Metrics Over Time")
 fig1 = px.line(
     cash_flows_df,
     x='Year',
-    y=[
-        'Cash Flow Pre-Debt ($B)', 'Cash Flow Post-Debt ($B)',
-        'Total Costs ($B)', 'Total Inflows ($B)',
-        'Interest Payment ($B)', 'Principal Payment ($B)',
-        'Dividends ($B)', 'Amount Paid Out ($B)'
-    ],
-    title="Financial Metrics Over Time"
+    y=['Cash Flow Pre-Debt ($B)', 'Cash Flow Post-Debt ($B)', 'Total Costs ($B)', 'Total Inflows ($B)'],
+    title="Cash Flows"
 )
-fig1.update_layout(**LEGEND_ABOVE)  # ← NEW
+fig1.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig1, use_container_width=True)
 
-# # Plot 4: Cumulative Post-Debt Cash Flow
-# fig4 = px.line(
-#     cum_post_debt_df,
-#     x='Year',
-#     y=['Cumulative Post-Debt Cash Flow ($B)'],
-#     title='Cumulative Post-Debt Cash Flow Over Project Lifetime',
-#     labels={'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Cash Flow ($B)'}
-# )
-# fig4.update_layout(hovermode='x unified')
-# st.plotly_chart(fig4, use_container_width=True)
-
-# # Plot 2: Balance Trends
-# fig2 = px.line(cash_flows_df, x='Year', y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)'],
-#                title="National Solar Array Cummulative Balance")
-# st.plotly_chart(fig2)
-
-# Plot 2: Balance Trends + Cumulative Post-Debt Cash Flow
-# fig2 = px.line(
-#     cash_flows_df,
-#     x='Year',
-#     y=[
-#         'Reinvested Balance ($B)',
-#         'Outstanding Principal ($B)',
-#         'Cumulative Post-Debt Cash Flow ($B)'
-#     ],
-#     title="National Solar Array: Balances & Cumulative Cash Flow",
-#     labels={
-#         'Reinvested Balance ($B)': 'Reinvested Balance ($B)',
-#         'Outstanding Principal ($B)': 'Outstanding Principal ($B)',
-#         'Cumulative Post-Debt Cash Flow ($B)': 'Cumulative Post-Debt Cash Flow ($B)'
-#     }
-# )
-
-# # Optional: make the cumulative line stand out
-# fig2.for_each_trace(lambda t: t.update(line=dict(width=3)) if 'Cumulative' in t.name else None)
-
-# fig2.update_layout(
-#     hovermode='x unified',
-#     legend=dict(title=None, orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-# )
-# st.plotly_chart(fig2, use_container_width=True)
+st.header("Balances & Cumulative Cash Flow")
 fig2 = px.line(
     cash_flows_df,
     x='Year',
-    y=[
-        'Reinvested Balance ($B)',
-        'Outstanding Principal ($B)',
-        'Cumulative Post-Debt Cash Flow ($B)'
-    ],
+    y=['Reinvested Balance ($B)', 'Outstanding Principal ($B)', 'Cumulative Post-Debt Cash Flow ($B)'],
     title="National Solar Array: Balances & Cumulative Cash Flow"
 )
 fig2.for_each_trace(lambda t: t.update(line=dict(width=3)) if 'Cumulative' in t.name else None)
-fig2.update_layout(**LEGEND_ABOVE)  # ← already correct
+fig2.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig2, use_container_width=True)
 
-# Plot 3: Emissions Reduction
-emissions_data = []
-displaceable_emissions = inputs['us_emissions_tons'] * inputs['displaceable_proportion']
-non_displaceable_emissions = inputs['us_emissions_tons'] * (1 - inputs['displaceable_proportion'])
-for t in range(10):
-    remaining_emissions = displaceable_emissions * (1 - t / 10) + non_displaceable_emissions
-    emissions_data.append({
-        'Year': t + 1,
-        'Total Emissions (B tons)': remaining_emissions / 10**9
-    })
-emissions_df = pd.DataFrame(emissions_data)
-fig3 = px.line(
-    emissions_df,
-    x='Year',
-    y=['Total Emissions (B tons)'],
-    title='CO2 Emissions Reduction Over Time'
-)
-fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
+st.header("CO2 Emissions Reduction")
+emissions_data = [
+    {'Year': t+1, 'Total Emissions (B tons)': (
+        inputs['us_emissions_tons'] * inputs['displaceable_proportion'] * (1 - t/10) +
+        inputs['us_emissions_tons'] * (1 - inputs['displaceable_proportion'])
+    ) / 1e9} for t in range(10)
+]
+fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
+fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
-
-
-
-
-
 
 
 
