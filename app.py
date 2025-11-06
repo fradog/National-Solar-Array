@@ -405,6 +405,50 @@ st.subheader("Levelised Cost of Energy (LCOE)")
 # 1. Run your full model (with degradation)
 lcoe_full = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
 
+# After lcoe_full and cash_flows_df
+lcoe_energy = lcoe_full['PV Energy (TWh)'] * 1e9  # kWh
+cf_energy = np.sum(cash_flows_df['Total Inflows ($B)'] * 1e9 / inputs['revenue_per_kwh'])
+
+# LCOE VALIDATION — FINAL
+if st.sidebar.checkbox("LCOE Validation Mode", value=False):
+    # Zero extras
+    for key in ['avoided_fuel_per_kwh', 'carbon_tax_rate', 'grid_maintenance', 'degradation_rate']:
+        inputs[key] = 0.0
+    inputs['bond_interest_rate'] = 0.0
+    inputs['bond_term'] = 0
+
+    # Recalculate
+    bond_principal, _ = calculate_bond_principal(inputs)
+    cash_flows_df = calculate_cash_flows(inputs, bond_principal)
+    lcoe_full = calculate_lcoe_simple(inputs)
+
+    # Force revenue = LCOE
+    inputs['revenue_per_kwh'] = lcoe_full['LCOE ($/MWh)'] / 1000
+
+    # Rebuild cash flows with exact revenue
+    energy_kwh = np.array([
+        min(inputs['initial_capacity'] + (inputs['target_capacity'] - inputs['initial_capacity']) * min(yr+1, 10)/10, inputs['target_capacity'])
+        * inputs['capacity_factor'] * 8760
+        for yr in range(30)
+    ])
+    revenue_series = energy_kwh * inputs['revenue_per_kwh']
+
+    capex_series = np.zeros(30)
+    for yr in range(10):
+        capex_series[yr] = (inputs['target_capacity'] - inputs['initial_capacity']) / 10 * inputs['capital_cost_per_kwp']
+
+    om_series = np.zeros(30)
+    cum_kw = inputs['initial_capacity']
+    for yr in range(30):
+        if yr < 10:
+            cum_kw += (inputs['target_capacity'] - inputs['initial_capacity']) / 10
+        om_series[yr] = cum_kw * inputs['capital_cost_per_kwp'] * inputs['om_rate']
+
+    unlevered_cf = revenue_series - capex_series - om_series
+    unlevered_npv = npf.npv(inputs['discount_rate'], unlevered_cf) / 1e12
+
+    st.success(f"Validation Mode: Revenue = LCOE → Unlevered NPV = ${unlevered_npv:+.3f}T")
+
 # 2. Run NREL ATB-style (no degradation, instant build)
 nrel_lcoe = calculate_lcoe_nrel_style(
     capex_per_kw=inputs['capital_cost_per_kwp'],
@@ -439,8 +483,10 @@ with col2:
         delta_color="inverse"
     )
     st.caption("Benchmark: excludes degradation & build-out")
+    
 
 st.metric("Solar-Only NPV (Unlevered)", f"${solar_npv:+.2f}T")
+st.caption(f"LCOE Energy: {lcoe_energy / 1e9:.2f} TWh | CF Energy: {cf_energy / 1e12:.2f} TWh")
 
 # --------------------------------------------------------------
 # DIAGNOSTIC TABLE
@@ -698,6 +744,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
