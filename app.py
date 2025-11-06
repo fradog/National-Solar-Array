@@ -340,14 +340,14 @@ target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # LCOE (simple, base units)
 # --------------------------------------------------------------
 
-lcoe_nrel = calculate_lcoe_nrel_style(
-    capex_per_kw=inputs['capital_cost_per_kwp'],
-    fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
-    cf=inputs['capacity_factor'],
-    wacc_real=inputs['discount_rate']
-)
+# lcoe_nrel = calculate_lcoe_nrel_style(
+#     capex_per_kw=inputs['capital_cost_per_kwp'],
+#     fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
+#     cf=inputs['capacity_factor'],
+#     wacc_real=inputs['discount_rate']
+# )
 
-diag = calculate_lcoe_diagnostic(inputs)
+# diag = calculate_lcoe_diagnostic(inputs)
 
 # --------------------------------------------------------------
 # LCOE DISPLAY – FIXED
@@ -369,6 +369,111 @@ with col1:
 with col2:
     st.metric("PV of Total Costs", f"${lcoe_result['PV Costs ($)'] / 1e9:,.2f} B")
     st.metric("PV of Total Energy", f"{lcoe_result['PV Energy (TWh)']:.2f} TWh")
+
+# --------------------------------------------------------------
+# LCOE: FULL COMPARISON (Your Model vs. NREL ATB Style)
+# --------------------------------------------------------------
+st.markdown("---")
+st.subheader("Levelised Cost of Energy (LCOE)")
+
+# 1. Run your full model (with degradation)
+lcoe_full = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
+
+# 2. Run NREL ATB-style (no degradation, instant build)
+nrel_lcoe = calculate_lcoe_nrel_style(
+    capex_per_kw=inputs['capital_cost_per_kwp'],
+    fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
+    cf=inputs['capacity_factor'],
+    wacc_real=inputs['discount_rate'],
+    project_life=inputs['project_lifespan']
+)
+
+# 3. Run diagnostics
+diag = calculate_lcoe_diagnostic(inputs, project_lifespan=inputs['project_lifespan'])
+
+# --------------------------------------------------------------
+# DISPLAY
+# --------------------------------------------------------------
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric(
+        label="**Your Model (PV + Degradation)**",
+        value=f"${lcoe_full['LCOE ($/MWh)']:.2f}/MWh"
+    )
+    st.caption(
+        f"→ **{lcoe_full['LCOE ($/MWh)'] / 1000:.6f} $/kWh**"
+    )
+
+with col2:
+    st.metric(
+        label="**NREL ATB Style (FCR, no deg.)**",
+        value=f"${nrel_lcoe:.2f}/MWh",
+        delta=f"{lcoe_full['LCOE ($/MWh)'] - nrel_lcoe:+.2f} $/MWh",
+        delta_color="inverse"
+    )
+    st.caption("Benchmark: excludes degradation & build-out")
+
+# --------------------------------------------------------------
+# DIAGNOSTIC TABLE
+# --------------------------------------------------------------
+st.markdown("#### Diagnostic Breakdown")
+diag_df = pd.DataFrame([
+    {
+        "Metric": "Total CAPEX",
+        "Value": f"${lcoe_full['Total CAPEX ($)'] / 1e9:,.2f} B",
+        "Per kW": f"${inputs['capital_cost_per_kwp']:,.0f}/kW"
+    },
+    {
+        "Metric": "PV of Total Costs",
+        "Value": f"${lcoe_full['PV Costs ($)'] / 1e9:,.2f} B",
+        "Per kW": f"${lcoe_full['PV Costs ($)'] / inputs['target_capacity']:,.0f}/kW"
+    },
+    {
+        "Metric": "PV of Total Energy",
+        "Value": f"{lcoe_full['PV Energy (TWh)']:.2f} TWh",
+        "Per Year": f"{lcoe_full['PV Energy (TWh)'] / inputs['project_lifespan']:.2f} TWh/yr"
+    },
+    {
+        "Metric": "Final Effective Capacity",
+        "Value": f"{diag['Final Eff Capacity (GW)']:.2f} GW",
+        "vs Target": f"{diag['Final Eff Capacity (GW)'] / (inputs['target_capacity']/1e9):.1%}"
+    },
+    {
+        "Metric": "Year 1 Energy",
+        "Value": f"{diag['Year 1 Energy (TWh)']:.2f} TWh",
+        "Expected": f"{inputs['target_capacity']/1e9 * inputs['capacity_factor'] * 8.76:.2f} TWh"
+    },
+    {
+        "Metric": "Year 30 Energy",
+        "Value": f"{diag['Year 30 Energy (TWh)']:.2f} TWh",
+        "vs Year 1": f"{diag['Year 30 Energy (TWh)'] / diag['Year 1 Energy (TWh)']:.1%}"
+    },
+])
+
+st.dataframe(
+    diag_df,
+    use_container_width=True,
+    hide_index=True
+)
+
+# --------------------------------------------------------------
+# EXPLANATION
+# --------------------------------------------------------------
+st.markdown("""
+**Why the difference?**  
+Your model includes:
+- **0.5%/yr degradation** → energy declines over time
+- **10-year build-out** → early years have lower output
+- **O&M on cumulative capacity**
+
+NREL's FCR method assumes:
+- **Constant annual output**
+- **Instant full capacity**
+- **No degradation**
+
+Your LCOE is **more realistic** for long-term planning.
+""")
 
 # Display results
 st.header("System Size")
@@ -565,6 +670,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
