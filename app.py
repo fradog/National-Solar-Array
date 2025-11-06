@@ -6,6 +6,8 @@ Created on Tues Oct 28 15:03:29 2025
 """
 
 # app.py
+import numpy as np
+import numpy_financial as npf
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -684,6 +686,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
