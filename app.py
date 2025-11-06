@@ -436,7 +436,7 @@ diag_df = pd.DataFrame([
     },
     {
         "Metric": "Final Effective Capacity",
-        "Value": f"{diag['Final Eff Capacity (GW)']:.2f} GW",
+        "Value": f"{diag['Final Eff Capacity (GW)']:.2f} TW",
         "vs Target": f"{diag['Final Eff Capacity (GW)'] / (inputs['target_capacity']/1e9):.1%}"
     },
     {
@@ -670,6 +670,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
