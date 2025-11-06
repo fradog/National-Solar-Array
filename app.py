@@ -336,6 +336,18 @@ target_energy_quads = efficiency_downgrade_ratio * mix_inputs['total_energy_quad
 target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # --- END NEW ---
 
+# In app.py — after cash_flows_df
+# Extract only solar operating cash flow
+solar_revenue = cash_flows_df['Total Inflows ($B)'] * 1e9  # only electricity sales
+solar_costs   = (
+    (cash_flows_df['Total Costs ($B)'] * 1e9)
+    - cash_flows_df['Interest Payment ($B)'] * 1e9
+    - cash_flows_df['Principal Payment ($B)'] * 1e9
+)
+
+solar_cash_flow = solar_revenue - solar_costs
+solar_npv = npf.npv(inputs['discount_rate'], solar_cash_flow) / 1e12
+
 # --------------------------------------------------------------
 # LCOE (simple, base units)
 # --------------------------------------------------------------
@@ -413,6 +425,8 @@ with col2:
         delta_color="inverse"
     )
     st.caption("Benchmark: excludes degradation & build-out")
+
+st.metric("Solar-Only NPV (Unlevered)", f"${solar_npv:+.2f}T")
 
 # --------------------------------------------------------------
 # DIAGNOSTIC TABLE
@@ -670,6 +684,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
