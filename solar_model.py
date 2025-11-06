@@ -254,10 +254,63 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
 
+def calculate_lcoe_simple(inputs: dict, project_lifespan: int = 30) -> dict:
+    discount_rate      = inputs['discount_rate']
+    capex_per_kw       = inputs['capital_cost_per_kwp']
+    om_rate            = inputs['om_rate']
+    grid_maintenance   = inputs['grid_maintenance']
+    cf                 = inputs['capacity_factor']
+    deg_rate           = inputs['degradation_rate']
+    init_kw            = inputs['initial_capacity']
+    target_kw          = inputs['target_capacity']
+    buildout_years     = 10
+
+    annual_add_kw = (target_kw - init_kw) / buildout_years
+    hours_per_year = cf * 8760
+
+    capex_usd   = np.zeros(project_lifespan)
+    om_usd      = np.zeros(project_lifespan)
+    grid_usd    = np.zeros(project_lifespan)
+    energy_kwh  = np.zeros(project_lifespan)
+
+    cum_kw = init_kw
+    eff_kw = init_kw
+
+    for yr in range(project_lifespan):
+        # Only add planned capacity — NO extra for degradation
+        new_kw = annual_add_kw if yr < buildout_years else 0.0
+
+        # Apply degradation to existing
+        eff_kw *= (1 - deg_rate)
+        # Add new capacity (not degraded yet)
+        eff_kw += new_kw
+        cum_kw += new_kw
+
+        capex_usd[yr] = new_kw * capex_per_kw
+        om_usd[yr]    = cum_kw * capex_per_kw * om_rate
+        grid_usd[yr]  = grid_maintenance
+        energy_kwh[yr] = eff_kw * hours_per_year
+
+    total_cost_usd = capex_usd + om_usd + grid_usd
+    years = np.arange(1, project_lifespan + 1)
+    dfac  = 1.0 / (1.0 + discount_rate) ** years
+
+    pv_cost_usd   = np.sum(total_cost_usd * dfac)
+    pv_energy_kwh = np.sum(energy_kwh * dfac)
+    lcoe_per_kwh  = pv_cost_usd / pv_energy_kwh
+
+    return {
+        "LCOE ($/MWh)": round(lcoe_per_kwh * 1000, 2),
+        "PV Costs ($)": pv_cost_usd,
+        "PV Energy (TWh)": pv_energy_kwh / 1e12,
+        "Total CAPEX ($)": np.sum(capex_usd),
+    }
+
+
 # ----------------------------------------------------------------------
 # LCOE – ALL UNITS: kW, kWh, $
 # ----------------------------------------------------------------------
-def calculate_lcoe_simple(
+def calculate_lcoe_simple_old(
     inputs: dict,
     project_lifespan: int = 30,
 ) -> dict:
@@ -353,6 +406,7 @@ def calculate_lcoe_simple(
         "Total CAPEX ($)":        np.sum(capex_usd),
         "Total O&M + Grid ($)":   np.sum(om_usd) + np.sum(grid_usd),
     }
+
 
 
 
