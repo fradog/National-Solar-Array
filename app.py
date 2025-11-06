@@ -339,7 +339,7 @@ target_energy_twh = target_energy_quads * 293.07  # 1 quad = 293.07 TWh
 # --------------------------------------------------------------
 # LCOE (simple, base units)
 # --------------------------------------------------------------
-lcoe = calculate_lcoe_simple(inputs)
+
 lcoe_nrel = calculate_lcoe_nrel_style(
     capex_per_kw=inputs['capital_cost_per_kwp'],
     fom_per_kw_yr=inputs['capital_cost_per_kwp'] * inputs['om_rate'],
@@ -349,30 +349,26 @@ lcoe_nrel = calculate_lcoe_nrel_style(
 
 diag = calculate_lcoe_diagnostic(inputs)
 
-
-#lcoe = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
+# --------------------------------------------------------------
+# LCOE DISPLAY – FIXED
+# --------------------------------------------------------------
+lcoe_result = calculate_lcoe_simple(inputs, project_lifespan=inputs['project_lifespan'])
 
 st.subheader("Levelised Cost of Energy (LCOE)")
 
-col_a, col_b = st.columns(2)
-with col_a:
+col1, col2 = st.columns(2)
+with col1:
     st.metric(
         "LCOE",
-        f"${lcoe['LCOE ($/kWh)']:.3f}/kWh"
+        f"${lcoe_result['LCOE ($/MWh)']:.2f}/MWh"
     )
     st.caption(
-        f"→ **{lcoe['LCOE ($/MWh)']:.2f} $/MWh**  "
-        f"(NREL 2024 ATB Advanced ≈ 31 $/MWh for Class-5 + 2-hr BESS)"
+        f"→ **{lcoe_result['LCOE ($/MWh)'] / 1000:.6f} $/kWh**"
     )
-with col_b:
-    st.metric(
-        "PV of Total Costs",
-        f"${lcoe['PV of Total Costs ($)'] / 1e9:,.0f} B"
-    )
-    st.metric(
-        "PV of Total Energy",
-        f"{lcoe['PV of Total Energy (kWh)'] / 1e9:,.0f} TWh"
-    )
+
+with col2:
+    st.metric("PV of Total Costs", f"${lcoe_result['PV Costs ($)'] / 1e9:,.2f} B")
+    st.metric("PV of Total Energy", f"{lcoe_result['PV Energy (TWh)']:.2f} TWh")
 
 # Display results
 st.header("System Size")
@@ -569,6 +565,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
