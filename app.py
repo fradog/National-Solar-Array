@@ -276,6 +276,13 @@ st.dataframe(diag_df, use_container_width=True, hide_index=True)
 # RESULTS
 # =============================================
 st.header("System Size")
+st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
+         f"The size of the solar system represented here is that which is required to replace fossil fueled energy in 2023, 77.1 quads (22,596 teraWatthours). \
+         The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the system. If these are upgraded or added \
+         to, those additions would reduce the size of the array assuming total U.S consumption remains level over the life of the system.\
+         In theory they could be left as is, but next gen nuclear offers local energy density for extreme local demands like those of future AI training datacenters."
+         f"</span>",
+         unsafe_allow_html=True)
 st.write(f"**Target Annual Energy**: {target_energy_twh:,.0f} TWh")
 st.write(f"**System Annual Energy**: {annual_energy_goal:,.0f} TWh")
 st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage: {inputs['coverage_ratio']:.2f})")
@@ -283,6 +290,20 @@ st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage: {inputs['cov
 st.header("Bond Principal")
 st.write(f"**Bond Principal**: ${bond_principal/1e9:.2f}B")
 st.write(f"**Carbon Tax Revenue (10yr)**: ${carbon_tax_10yr/1e9:.2f}B")
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "Note: Carbon tax revenue applied as cash flow to reduce bond principal."
+         "</span>",
+    unsafe_allow_html=True)
+st.write("<span style='font-size:0.85rem; font-style:italic;'>"
+         "The Bond Principal is essentially how much we would need to build the array, its associated storage, grid upgrades and grid maintenance.\
+         It is roughly on the order of one year's defense budget. Investors in this bond will see compound annual growth rates \
+         competitive with other much higher risk investments. \
+         Try moving the Reinvestment Percentage slider toward zero and push the Dividend Percentage slider toward one and watch the \
+         investor's balance syrocket. This simulation divides the net cash-flow-in into a mix of an amount paid out to investors as dividends \
+         and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
+         purpose in the interest of the nation."
+         "</span>",
+    unsafe_allow_html=True)
 
 st.header("Key Metrics")
 metrics_df = pd.DataFrame([metrics]).round(2)
@@ -297,7 +318,7 @@ styled = (
 )
 st.write(f'<div style="overflow-x:auto;">{styled.to_html()}</div>', unsafe_allow_html=True)
 
-st.header("Annual Capacity and Cash Flow")
+st.header("Annual Capacity and Cash Flows")
 st.dataframe(cash_flows_df.round(2))
 
 st.header("Funding Mix")
@@ -337,6 +358,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
