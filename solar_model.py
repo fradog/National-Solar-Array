@@ -254,7 +254,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
 
-def calculate_lcoe_simple(inputs: dict, project_lifespan: int = 30) -> dict:
+def calculate_lcoe_simple_new(inputs: dict, project_lifespan: int = 30) -> dict:
     discount_rate      = inputs['discount_rate']
     capex_per_kw       = inputs['capital_cost_per_kwp']
     om_rate            = inputs['om_rate']
@@ -310,7 +310,7 @@ def calculate_lcoe_simple(inputs: dict, project_lifespan: int = 30) -> dict:
 # ----------------------------------------------------------------------
 # LCOE – ALL UNITS: kW, kWh, $
 # ----------------------------------------------------------------------
-def calculate_lcoe_simple_old(
+def calculate_lcoe_simple(
     inputs: dict,
     project_lifespan: int = 30,
 ) -> dict:
@@ -406,6 +406,7 @@ def calculate_lcoe_simple_old(
         "Total CAPEX ($)":        np.sum(capex_usd),
         "Total O&M + Grid ($)":   np.sum(om_usd) + np.sum(grid_usd),
     }
+
 
 
 
