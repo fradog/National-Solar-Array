@@ -317,7 +317,7 @@ def calculate_lcoe_diagnostic(inputs: dict, project_lifespan: int = 30) -> dict:
         "PV Costs ($)": pv_cost_usd,
         "PV Energy (TWh)": pv_energy_kwh / 1e12,
         "Total CAPEX ($)": np.sum(capex_usd),
-        "Final Eff Capacity (GW)": eff_kw_arr[-1] / 1e9,
+        "Final Eff Capacity (TW)": eff_kw_arr[-1] / 1e9,
         "Year 1 Energy (TWh)": energy_kwh[0] / 1e12,
         "Year 30 Energy (TWh)": energy_kwh[-1] / 1e12,
         "Discount Year 1": dfac[0],
@@ -399,6 +399,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
