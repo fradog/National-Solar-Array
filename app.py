@@ -318,6 +318,18 @@ for param, value in default_inputs.items():
             format=format_str
         )
 
+# In sidebar
+validate_lcoe = st.sidebar.checkbox("LCOE Validation Mode (Zero extras + Unlevered NPV)")
+
+if validate_lcoe:
+    # Override inputs
+    inputs['avoided_fuel_per_kwh'] = 0.0
+    inputs['carbon_tax_rate'] = 0.0
+    inputs['grid_maintenance'] = 0.0
+    inputs['degradation_rate'] = 0.0
+    inputs['bond_interest_rate'] = 0.0  # no debt cost
+    inputs['bond_term'] = 0
+
 # Calculate results
 annual_energy_goal, required_area = target_total_energy(inputs)
 bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
@@ -686,6 +698,7 @@ fig3 = px.line(
 )
 fig3.update_layout(**LEGEND_ABOVE)  # ← NEW
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
