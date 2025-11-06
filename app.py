@@ -245,11 +245,11 @@ st.subheader("Levelised Cost of Energy (LCOE)")
 
 col1, col2 = st.columns(2)
 with col1:
-    st.metric("**Your Model (PV + Degradation)**", f"${lcoe_full['LCOE ($/MWh)']:.2f}/MWh")
+    st.metric("**Your Model (PV (+ Battery Storage) + Degradation)**", f"${lcoe_full['LCOE ($/MWh)']:.2f}/MWh")
     st.caption(f"→ {lcoe_full['LCOE ($/MWh)']/1000:.6f} $/kWh")
 with col2:
     delta = lcoe_full['LCOE ($/MWh)'] - nrel_lcoe
-    st.metric("**NREL ATB Style (FCR, no deg.)**", f"${nrel_lcoe:.2f}/MWh", f"{delta:+.2f} $/MWh", delta_color="inverse")
+    st.metric("**NREL ATB Style (PV (+ Battery Storage) FCR, no Degradation.)**", f"${nrel_lcoe:.2f}/MWh", f"{delta:+.2f} $/MWh", delta_color="inverse")
 
 # Validation result
 if validate_lcoe:
@@ -297,6 +297,9 @@ styled = (
 )
 st.write(f'<div style="overflow-x:auto;">{styled.to_html()}</div>', unsafe_allow_html=True)
 
+st.header("Annual Capacity and Cash Flow")
+st.dataframe(cash_flows_df.round(2))
+
 st.header("Funding Mix")
 st.dataframe(funding_mix_df.round(2))
 
@@ -334,6 +337,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
