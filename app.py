@@ -322,17 +322,14 @@ st.write(f'<div style="overflow-x:auto;">{styled.to_html()}</div>', unsafe_allow
 st.header("Annual Capacity and Cash Flows")
 st.dataframe(cash_flows_df.round(2), hide_index=True)
 
+st.header("Funding Mix")
 st.subheader("Funding Mix & Household Investment")
-
-# Optional: Show single metric
 household_invest = bond_principal / 132_000_000
 st.metric(
     "Investment per U.S. Household to Fully Fund Bond",
     f"${household_invest:,.0f}",
     help="Assumes 132 million U.S. households (Census 2023)"
 )
-st.header("Funding Mix")
-# Styled table
 st.dataframe(
     funding_mix_df.round(2),
     hide_index=True
@@ -372,6 +369,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
