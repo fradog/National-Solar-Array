@@ -9,7 +9,7 @@ import numpy as np
 import numpy_financial as npf
 import pandas as pd
 
-def calculate_efficiency_downgrade(mix_inputs): 
+def calculate_efficiency_upgrade(mix_inputs): 
     
     pet_energy = mix_inputs['total_energy_quads'] * mix_inputs['petroleum_fraction']
     gas_energy = mix_inputs['total_energy_quads'] * mix_inputs['gas_fraction'] 
@@ -27,26 +27,26 @@ def calculate_efficiency_downgrade(mix_inputs):
     gas_elec_energy = gas_energy * mix_inputs['gas_elec_fraction']
     coal_elec_energy = coal_energy * mix_inputs['coal_elec_fraction']
     
-    pet_ice_downgrade = pet_trans_energy * mix_inputs['vehicle_ice_eff'] / mix_inputs['vehicle_elec_eff']  # Fixed spelling
-    pet_heating_downgrade = pet_heating_energy * mix_inputs['petroleum_heating_eff'] / mix_inputs['elec_heating_eff']
-    pet_elec_downgrade = pet_elec_energy * mix_inputs['utility_ice_elec_eff'] / mix_inputs['elec_elec_eff']
+    pet_ice_upgrade = pet_trans_energy * mix_inputs['vehicle_ice_eff'] / mix_inputs['vehicle_elec_eff']  
+    pet_heating_upgrade = pet_heating_energy * mix_inputs['petroleum_heating_eff'] / mix_inputs['elec_heating_eff']
+    pet_elec_upgrade = pet_elec_energy * mix_inputs['utility_ice_elec_eff'] / mix_inputs['elec_elec_eff']
     
-    gas_ice_downgrade = gas_trans_energy * mix_inputs['vehicle_ice_eff'] / mix_inputs['vehicle_elec_eff']
-    gas_heating_downgrade = gas_heating_energy * mix_inputs['gas_heating_eff'] / mix_inputs['elec_heating_eff']
-    gas_elec_downgrade = gas_elec_energy * mix_inputs['utility_ice_elec_eff'] / mix_inputs['elec_elec_eff']
+    gas_ice_upgrade = gas_trans_energy * mix_inputs['vehicle_ice_eff'] / mix_inputs['vehicle_elec_eff']
+    gas_heating_upgrade = gas_heating_energy * mix_inputs['gas_heating_eff'] / mix_inputs['elec_heating_eff']
+    gas_elec_upgrade = gas_elec_energy * mix_inputs['utility_ice_elec_eff'] / mix_inputs['elec_elec_eff']
     
-    coal_trans_downgrade = coal_trans_energy * mix_inputs['vehicle_ice_eff'] / mix_inputs['vehicle_elec_eff']
-    coal_heating_downgrade = coal_heating_energy * mix_inputs['coal_heating_eff'] / mix_inputs['elec_heating_eff']
-    coal_elec_downgrade = coal_elec_energy * mix_inputs['utility_ice_elec_eff'] / mix_inputs['elec_elec_eff']
+    coal_trans_upgrade = coal_trans_energy * mix_inputs['vehicle_ice_eff'] / mix_inputs['vehicle_elec_eff']
+    coal_heating_upgrade = coal_heating_energy * mix_inputs['coal_heating_eff'] / mix_inputs['elec_heating_eff']
+    coal_elec_upgrade = coal_elec_energy * mix_inputs['utility_ice_elec_eff'] / mix_inputs['elec_elec_eff']
     
-    pet_dg = (pet_ice_downgrade + pet_heating_downgrade + pet_elec_downgrade)
-    gas_dg = (gas_ice_downgrade + gas_heating_downgrade + gas_elec_downgrade)
-    coal_dg = (coal_trans_downgrade + coal_heating_downgrade + coal_elec_downgrade)
-    dg = pet_dg + gas_dg + coal_dg
-    dg_ratio = dg / mix_inputs['total_energy_quads']
-    return dg_ratio
+    pet_ug = (pet_ice_upgrade + pet_heating_upgrade + pet_elec_upgrade)
+    gas_ug = (gas_ice_upgrade + gas_heating_upgrade + gas_elec_upgrade)
+    coal_ug = (coal_trans_upgrade + coal_heating_upgrade + coal_elec_upgrade)
+    ug = pet_ug + gas_ug + coal_ug
+    ug_ratio = ug / mix_inputs['total_energy_quads']
+    return ug_ratio
 
-# Add this at the bottom of efficiency_downgrade.py
+# Add this at the bottom of efficiency_upgrade.py
 if __name__ == "__main__":
     # Only runs when you execute the file directly
     test_inputs = {
@@ -72,10 +72,11 @@ if __name__ == "__main__":
         'elec_heating_eff': 1.000,
         'elec_elec_eff': 1.000
     }
-    print("Test result:", calculate_efficiency_downgrade(test_inputs))
+    print("Test result:", calculate_efficiency_upgrade(test_inputs))
     
 
                                                                                                   
+
 
 
 
