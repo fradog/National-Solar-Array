@@ -377,9 +377,9 @@ def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
             'Diverted Funds ($B)': round(diverted_funds / 1e9, 2),
             'Diverted Funds Coverage (%)': round(diverted_funds / bond_principal * 100, 1) if bond_principal > 0 else 0,
             'Tax Revenue Needed ($B)': round(tax_revenue_needed / 1e9, 2),
-            'Tax Revenue Coverage (%)': round(tax_revenue_percent, 1),
+            'Tax Revenue Coverage (%)': round(tax_revenue_percent, 1)
             # NEW COLUMN
-            'Household Investment Required ($)': round(household_investment, 0)
+            # 'Household Investment Required ($)': round(household_investment, 0)
         })
 
     return pd.DataFrame(funding_mix)
@@ -417,6 +417,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
