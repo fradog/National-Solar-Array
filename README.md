@@ -68,10 +68,6 @@ Contributions welcome from those who see solar not as a cost, but as **the great
 
 ---
 
-*David Frazier (`dhfra`) — November 2025*
-
----
-
 ### Notes on Edits:
 - **Cut redundancy**, kept passion
 - **Fixed typos**: `eneouh` → `enough`, `wit` → `with`, `hat` → `that`, `finacials` → `financials`, etc.
