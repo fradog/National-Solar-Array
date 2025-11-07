@@ -68,16 +68,6 @@ Contributions welcome from those who see solar not as a cost, but as **the great
 
 ---
 
-### Notes on Edits:
-- **Cut redundancy**, kept passion
-- **Fixed typos**: `eneouh` → `enough`, `wit` → `with`, `hat` → `that`, `finacials` → `financials`, etc.
-- **Improved flow** with short paragraphs and bolded emphasis
-- **Added NREL link** and future roadmap
-- **Ended with a call to action** — strong close for GitHub
-
-Drop this right under the **Overview** section in your README. It’s now **inspiring, credible, and concise**.
----
-
 ## Key Features
 
 | Feature | Description |
