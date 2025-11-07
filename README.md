@@ -123,8 +123,8 @@ Enable **"LCOE Validation Mode"** in the sidebar to:
 | **LCOE (NREL FCR)** | ~$55.10/MWh |
 | **Bond Principal** | ~$9.5T |
 | **NPV Post-Debt** | +$10–15T |
-| **Individual Investor CAGR** | 6–8% |
-| **Payback Period** | ~8–10 years |
+| **Individual Investor CAGR** | 6–15% |
+| **Payback Period** | ~8–12 years |
 | **Area Required** | ~21,000 sq mi |
 
 ---
