@@ -347,19 +347,6 @@ st.dataframe(
         "Tax Revenue Needed ($B)": st.column_config.NumberColumn(format="$%,.2fB"),
     }
 )
-# st.header("Funding Mix")
-# st.subheader("Funding Mix & Household Investment")
-# st.dataframe(
-#     funding_mix_df.round(2),
-#     hide_index=True,
-#     column_config={
-#         "Household Investment Required ($)": st.column_config.NumberColumn(
-#             "Per Household ($)",
-#             format="$%,.0f"
-#         )
-#     }
-# )
-
 
 # =============================================
 # PLOTS
@@ -395,6 +382,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
