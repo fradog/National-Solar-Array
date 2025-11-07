@@ -323,7 +323,19 @@ st.header("Annual Capacity and Cash Flows")
 st.dataframe(cash_flows_df.round(2), hide_index=True)
 
 st.header("Funding Mix")
-st.dataframe(funding_mix_df.round(2), hide_index=True)
+# st.dataframe(funding_mix_df.round(2), hide_index=True)
+st.subheader("Funding Mix & Household Investment")
+st.dataframe(
+    funding_mix_df.round(2),
+    hide_index=True,
+    column_config={
+        "Household Investment Required ($)": st.column_config.NumberColumn(
+            "Per Household ($)",
+            format="$%,d"
+        )
+    }
+)
+
 
 # =============================================
 # PLOTS
@@ -359,6 +371,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
