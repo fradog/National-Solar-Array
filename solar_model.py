@@ -350,7 +350,7 @@ def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
 
     # Estimate U.S. households (2023: ~132 million)
     # Source: U.S. Census Bureau – https://www.census.gov/housing/hvs/files/currenthvspress.pdf
-    US_HOUSEHOLDS = 132_000_000
+    us_households = 132000000
 
     # Annual diverted funds (mid-case)
     diverted_funds_annual_mid = (12.5 + 2.5 + 7.5) * 10**9
@@ -363,7 +363,7 @@ def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
         bond_coverage = bond_proceeds / bond_principal * 100 if bond_principal > 0 else 0
 
         # NEW: Household investment to fully cover bond
-        household_investment = bond_principal / US_HOUSEHOLDS if US_HOUSEHOLDS > 0 else 0
+        household_investment = bond_principal / us_households if us_households > 0 else 0
 
         diverted_funds = diverted_funds_10yr_mid
         tax_revenue_needed = bond_principal - bond_proceeds - diverted_funds
@@ -383,37 +383,6 @@ def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
         })
 
     return pd.DataFrame(funding_mix)
-# def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
-#     us_adult_population = inputs['us_adult_population']
-#     participation_rate_low = inputs['participation_rate_low']
-#     participation_rate_mid = inputs['participation_rate_mid']
-#     participation_rate_high = inputs['participation_rate_high']
-#     individual_investment = inputs['individual_investment']
-    
-#     diverted_funds_annual_mid = (12.5 + 2.5 + 7.5) * 10**9
-#     diverted_funds_10yr_mid = diverted_funds_annual_mid * buildout_years
-    
-#     funding_mix = []
-#     for pr in [participation_rate_low, participation_rate_mid, participation_rate_high]:
-#         num_investors = us_adult_population * pr
-#         bond_proceeds = num_investors * individual_investment
-#         bond_coverage = bond_proceeds / bond_principal * 100 if bond_principal > 0 else 0
-#         diverted_funds = diverted_funds_10yr_mid
-#         tax_revenue_needed = bond_principal - bond_proceeds - diverted_funds
-#         tax_revenue_percent = tax_revenue_needed / bond_principal * 100 if bond_principal > 0 else 0
-#         funding_mix.append({
-#             'Participation Rate (%)': pr * 100,
-#             'Number of Investors (M)': num_investors / 10**6,
-#             'Bond Proceeds ($B)': bond_proceeds / 10**9,
-#             'Bond Coverage (%)': bond_coverage,
-#             'Diverted Funds ($B)': diverted_funds / 10**9,
-#             'Diverted Funds Coverage (%)': diverted_funds / bond_principal * 100 if bond_principal > 0 else 0,
-#             'Tax Revenue Needed ($B)': tax_revenue_needed / 10**9,
-#             'Tax Revenue Coverage (%)': tax_revenue_percent
-#         })
-    
-#     return pd.DataFrame(funding_mix)
-
 
 def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30):
     discount_rate = inputs['discount_rate']
@@ -448,6 +417,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
