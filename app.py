@@ -14,9 +14,9 @@ import sys
 
 # --- RELOAD MODULES (for live editing) ---
 st.cache_data.clear()
-if 'efficiency_downgrade' in sys.modules:
-    importlib.reload(sys.modules['efficiency_downgrade'])
-from efficiency_downgrade import calculate_efficiency_downgrade
+if 'efficiency_upgrade' in sys.modules:
+    importlib.reload(sys.modules['efficiency_upgrade'])
+from efficiency_upgrade import calculate_efficiency_upgrade
 
 # --- IMPORT MODEL FUNCTIONS ---
 from solar_model import (
@@ -66,7 +66,7 @@ default_inputs = {
     'capacity_factor': 0.2700,
     'revenue_per_kwh': 0.16,
     'avoided_fuel_per_kwh': 0.03,
-    'efficiency_downgrade': 0.10,
+    'efficiency_upgrade': 0.10,
     'capital_cost_per_kwp': 1_730,
     'om_rate': 0.01,
     'grid_maintenance': 50_000_000_000,
@@ -127,10 +127,10 @@ mix_inputs = {
     'elec_heating_eff': 1.0, 'elec_elec_eff': 1.0,
 }
 
-# Calculate efficiency downgrade
-efficiency_downgrade_ratio = calculate_efficiency_downgrade(mix_inputs)
-default_inputs['efficiency_downgrade'] = efficiency_downgrade_ratio
-st.write(f"**Efficiency Downgrade Ratio**: {efficiency_downgrade_ratio:,.3f}")
+# Calculate efficiency upgrade
+efficiency_upgrade_ratio = calculate_efficiency_upgrade(mix_inputs)
+default_inputs['efficiency_upgrade'] = efficiency_upgrade_ratio
+st.write(f"**Efficiency Upgrade Ratio**: {efficiency_upgrade_ratio:,.3f}")
 
 # =============================================
 # SIDEBAR INPUTS
@@ -187,7 +187,7 @@ funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
 
 # Target energy with efficiency
-target_energy_quads = efficiency_downgrade_ratio * 77.10
+target_energy_quads = efficiency_upgrade_ratio * 77.10
 target_energy_twh = target_energy_quads * 293.07
 
 st.header("System Size")
@@ -359,6 +359,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
