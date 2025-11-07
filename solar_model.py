@@ -93,7 +93,7 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
     dividend_percentage = inputs['dividend_percentage']
     bond_term = inputs['bond_term']
     individual_investment = inputs['individual_investment']
-    efficiency_uprade = inputs['efficiency_upgrade']
+    efficiency_upgrade = inputs['efficiency_upgrade']
     
     annual_addition = (target_capacity - initial_capacity) / 10
     annual_debt_service = -npf.pmt(bond_interest_rate, bond_term, bond_principal) if bond_term > 0 else 0
@@ -407,6 +407,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
