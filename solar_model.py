@@ -350,7 +350,7 @@ def calculate_funding_mix(inputs, bond_principal, buildout_years=10):
 
     # Estimate U.S. households (2023: ~132 million)
     # Source: U.S. Census Bureau – https://www.census.gov/housing/hvs/files/currenthvspress.pdf
-    us_households = 132000000
+    us_households = 132_000_000
 
     # Annual diverted funds (mid-case)
     diverted_funds_annual_mid = (12.5 + 2.5 + 7.5) * 10**9
@@ -417,6 +417,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
