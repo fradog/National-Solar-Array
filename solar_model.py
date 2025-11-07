@@ -38,7 +38,7 @@ def calculate_bond_principal(inputs, buildout_years=10):
     carbon_tax_rate = inputs['carbon_tax_rate']
     carbon_tax_effective_rate = inputs['carbon_tax_effective_rate']
     displaceable_proportion = inputs['displaceable_proportion']
-    efficiency_downgrade = inputs['efficiency_downgrade']
+    efficiency_upgrade = inputs['efficiency_upgrade']
     
     if displaceable_proportion < 0 or displaceable_proportion > 1:
         raise ValueError("Displaceable proportion must be between 0 and 1")
@@ -407,6 +407,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
