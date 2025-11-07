@@ -22,6 +22,8 @@ The model shows that **at current average electricity prices (~$0.16/kWh)**, the
 - High investor returns
 - National reinvestment or public dividends
 
+## Background and Motivation
+
 This model is highly interactive and all input parameters may be modified via input sliders and numerical text boxes. 
 Reload the app to reset back to defaults.
 
