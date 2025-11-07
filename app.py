@@ -330,7 +330,7 @@ st.metric(
     f"${household_invest:,.0f}",
     help="Assumes 132 million U.S. households (Census 2023)"
 )
-st.subheader(f"Funding Mix Based on U.S. Adult Investor Participation Rates at ${inputs['individual_investment']} per Investor")
+st.subheader(f"Funding Mix Based on U.S. Adult Investor Participation Rates at ${inputs['individual_investment']:,.0f} per Investor")
 st.dataframe(
     funding_mix_df.round(2),
     hide_index=True
@@ -370,6 +370,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
