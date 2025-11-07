@@ -65,7 +65,7 @@ def calculate_bond_principal(inputs, buildout_years=10):
         om_cost = cumulative_capacity * capital_cost_per_kwp * om_rate
         total_costs = capital_cost + om_cost + grid_maintenance
         revenue = energy_kwh * revenue_per_kwh
-        avoided_fuel = energy_kwh / efficiency_downgrade * avoided_fuel_per_kwh
+        avoided_fuel = energy_kwh / efficiency_upgrade * avoided_fuel_per_kwh
         remaining_emissions = displaceable_emissions * (1 - t / buildout_years) + non_displaceable_emissions
         annual_carbon_tax = carbon_tax_rate * remaining_emissions * carbon_tax_effective_rate
         carbon_tax_10yr += annual_carbon_tax
@@ -136,7 +136,7 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
         cumulative_capacity += total_new_capacity
         effective_capacity += total_new_capacity
         revenue = energy_kwh * revenue_per_kwh
-        avoided_fuel = energy_kwh / efficiency_downgrade * avoided_fuel_per_kwh
+        avoided_fuel = energy_kwh / efficiency_upgrade * avoided_fuel_per_kwh
         total_annual_inflows = revenue + avoided_fuel
         capital_cost = total_new_capacity * capital_cost_per_kwp
         om_cost = cumulative_capacity * capital_cost_per_kwp * om_rate
@@ -407,6 +407,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
