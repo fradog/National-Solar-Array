@@ -170,14 +170,13 @@ with st.sidebar.expander("System Scale", expanded=True):
     inputs['us_adult_population'] = st.slider(
         "US Adult Population (M)",
         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-    # ---- PANEL RATING (was missing) ----
     inputs['panel_rating'] = _make_slider(
         'panel_rating',
         default_inputs['panel_rating'],
         unit="W/m²",
         min_value=200.0, max_value=350.0, step=0.1,
         format="%.1f"
-    )
+        )
     inputs['coverage_ratio'] = _make_slider(
         'panel_rating',
         default_inputs['panel_rating'],
@@ -185,7 +184,13 @@ with st.sidebar.expander("System Scale", expanded=True):
         min_value=0.0, max_value=1.0, step=0.1,
         format="%.1f"
     )
-
+    inputs['degradation_ratio'] = _make_slider(
+        'panel_rating',
+        default_inputs['panel_rating'],
+        unit="",
+        min_value=0.000, max_value=1.000, step=0.005,
+        format="%.3f"
+    )
 
 
 # -------------------------------------------------
@@ -500,6 +505,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
