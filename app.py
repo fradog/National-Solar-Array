@@ -194,7 +194,6 @@ annual_energy_goal, required_area = target_total_energy(inputs)
 bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
 cash_flows_df['Cumulative Post-Debt Cash Flow ($B)'] = cash_flows_df['Cash Flow Post-Debt ($B)'].cumsum()
-final_energy_twh = cash_flows_df['Energy Yield (TWh)'] 
 
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
@@ -202,6 +201,7 @@ metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
 # Target energy with efficiency
 target_energy_quads = efficiency_upgrade_ratio * 77.10
 target_energy_twh = target_energy_quads * 293.07
+final_energy_twh = cash_flows_df.loc[cash_flows_df['Year'] == 30, 'Energy Yield (TWh)'].iloc[0] 
 
 st.header("System Size")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
@@ -383,6 +383,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
