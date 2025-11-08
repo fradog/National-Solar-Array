@@ -174,14 +174,24 @@ def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
 # -------------------------------------------------
 # 4. Grouped sections
 # -------------------------------------------------
+
 with st.sidebar.expander("Costs", expanded=False):
-    # ---- CAPEX (was a text box – now a slider) ----
+    # ---- PANEL RATING (was missing) ----
+    inputs['panel_rating'] = _make_slider(
+        'panel_rating',
+        default_inputs['panel_rating'],
+        unit="W/m²",
+        min_value=200.0, max_value=350.0, step=0.1,
+        format="%.1f"
+    )
+
+    # ---- CAPEX (slider, fixed format) ----
     inputs['capital_cost_per_kwp'] = _make_slider(
         'capital_cost_per_kwp',
         default_inputs['capital_cost_per_kwp'],
         unit="$/kWp",
         min_value=500, max_value=3_000, step=10,
-        format="$%,d"
+        format="$%,.0f"   # ← FIXED: was "$%,d"
     )
 
     inputs['om_rate'] = _make_slider(
@@ -481,6 +491,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
