@@ -132,9 +132,7 @@ efficiency_upgrade_ratio = calculate_efficiency_upgrade(mix_inputs)
 default_inputs['efficiency_upgrade'] = efficiency_upgrade_ratio
 st.write(f"**Efficiency Upgrade Ratio**: {efficiency_upgrade_ratio:,.3f}")
 
-# =============================================
-# SIDEBAR INPUTS
-# =============================================
+# === SIDEBAR INPUTS ===
 st.sidebar.header("Input Parameters")
 inputs = {}
 
@@ -144,19 +142,19 @@ inputs['initial_capacity'] = st.sidebar.slider("Initial Capacity (GWp)", 0, 1000
 inputs['target_capacity'] = st.sidebar.slider("Target Capacity (GWp)", 3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
 inputs['us_adult_population'] = st.sidebar.slider("US Adult Population (M)", 200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
 
-# === SKIP EFFICIENCY SLIDERS IN SIDEBAR (they're in main body) ===
+# === SKIP EFFICIENCY SLIDERS (already in main body) ===
 EFFICIENCY_PARAMS = {
     'vehicle_ice_eff',
     'vehicle_elec_eff',
     'utility_ice_elec_eff'
 }
 
-# All other inputs (skip efficiency ones)
+# All other inputs
 for param, value in default_inputs.items():
-    if param in inputs: 
+    if param in inputs:                     # already set
         continue
-    if param in EFFICIENCY_PARAMS:
-        continue  # Skip — already in main body
+    if param in EFFICIENCY_PARAMS:          # skip — in main body
+        continue
 
     label = param.replace('_', ' ').title()
 
@@ -166,14 +164,76 @@ for param, value in default_inputs.items():
         user = st.sidebar.text_input(label, formatted)
         try:
             inputs[param] = int(user.replace(',', '').strip())
-        except:
+        except Exception:
             st.sidebar.warning(f"Invalid {label}. Using default.")
             inputs[param] = value
+        continue
+
+    # Float parameters
+    if param == 'capacity_factor':
+        max_val = 0.31
+        step    = 0.0001
+        min_val = 0.15
+        fmt     = "%.4f"
     else:
-        step = 0.0001 if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else 0.001
-        max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0 if param not in ['capacity_factor'] else 0.31
-        fmt = "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
-        inputs[param] = st.sidebar.slider(label, 0.0, max_val, value, step, format=fmt)
+        step = 0.0001 if param in ['degradation_rate', 'om_rate', 'revenue_per_kwh'] else 0.001
+        max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0
+        min_val = 0.0
+        fmt = "%.4f" if param in ['degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
+
+    inputs[param] = st.sidebar.slider(
+        label,
+        min_value=min_val,
+        max_value=max_val,
+        value=value,
+        step=step,
+        format=fmt
+    )
+
+
+
+# # =============================================
+# # SIDEBAR INPUTS
+# # =============================================
+# st.sidebar.header("Input Parameters")
+# inputs = {}
+
+# # System Scale
+# st.sidebar.subheader("System Scale")
+# inputs['initial_capacity'] = st.sidebar.slider("Initial Capacity (GWp)", 0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
+# inputs['target_capacity'] = st.sidebar.slider("Target Capacity (GWp)", 3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
+# inputs['us_adult_population'] = st.sidebar.slider("US Adult Population (M)", 200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
+
+# # === SKIP EFFICIENCY SLIDERS IN SIDEBAR (they're in main body) ===
+# EFFICIENCY_PARAMS = {
+#     'vehicle_ice_eff',
+#     'vehicle_elec_eff',
+#     'utility_ice_elec_eff'
+# }
+
+# # All other inputs (skip efficiency ones)
+# for param, value in default_inputs.items():
+#     if param in inputs: 
+#         continue
+#     if param in EFFICIENCY_PARAMS:
+#         continue  # Skip — already in main body
+
+#     label = param.replace('_', ' ').title()
+
+#     if isinstance(value, int):
+#         step = 1 if param in ['project_lifespan', 'bond_term'] else 1_000_000
+#         formatted = f"{value:,}"
+#         user = st.sidebar.text_input(label, formatted)
+#         try:
+#             inputs[param] = int(user.replace(',', '').strip())
+#         except:
+#             st.sidebar.warning(f"Invalid {label}. Using default.")
+#             inputs[param] = value
+#     else:
+#         step = 0.0001 if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else 0.001
+#         max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0 if param not in ['capacity_factor'] else 0.31
+#         fmt = "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
+#         inputs[param] = st.sidebar.slider(label, 0.0, max_val, value, step, format=fmt)
 
 
 # =============================================
@@ -383,6 +443,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
