@@ -139,7 +139,26 @@ st.sidebar.header("Input Parameters")
 inputs = {}
 
 # -------------------------------------------------
-# 1. System Scale (already sliders – keep as-is)
+# 1. Helper: skip efficiency params (they live in main body)
+# -------------------------------------------------
+SKIP_EFFICIENCY = {
+    'vehicle_ice_eff',
+    'vehicle_elec_eff',
+    'utility_ice_elec_eff'
+}
+
+# -------------------------------------------------
+# 2. Custom label + slider logic
+# -------------------------------------------------
+def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
+    """Create a slider with a *custom* label that includes the unit."""
+    # Build a pretty label:  "Revenue Per KWh"  →  "Consumer Energy Price $/kWh"
+    pretty = param.replace('_', ' ').title()
+    label = f"{pretty} {unit}".strip()
+    return st.sidebar.slider(label, value=default, **kwargs)
+
+# -------------------------------------------------
+# 3. System Scale (already sliders – keep as-is)
 # -------------------------------------------------
 with st.sidebar.expander("System Scale", expanded=True):
     inputs['initial_capacity'] = st.slider(
@@ -151,31 +170,6 @@ with st.sidebar.expander("System Scale", expanded=True):
     inputs['us_adult_population'] = st.slider(
         "US Adult Population (M)",
         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-
-# -------------------------------------------------
-# 2. Helper: skip efficiency params (they live in main body)
-# -------------------------------------------------
-SKIP_EFFICIENCY = {
-    'vehicle_ice_eff',
-    'vehicle_elec_eff',
-    'utility_ice_elec_eff'
-}
-
-# -------------------------------------------------
-# 3. Custom label + slider logic
-# -------------------------------------------------
-def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
-    """Create a slider with a *custom* label that includes the unit."""
-    # Build a pretty label:  "Revenue Per KWh"  →  "Consumer Energy Price $/kWh"
-    pretty = param.replace('_', ' ').title()
-    label = f"{pretty} {unit}".strip()
-    return st.sidebar.slider(label, value=default, **kwargs)
-
-# -------------------------------------------------
-# 4. Grouped sections
-# -------------------------------------------------
-
-with st.sidebar.expander("Costs", expanded=False):
     # ---- PANEL RATING (was missing) ----
     inputs['panel_rating'] = _make_slider(
         'panel_rating',
@@ -184,7 +178,22 @@ with st.sidebar.expander("Costs", expanded=False):
         min_value=200.0, max_value=350.0, step=0.1,
         format="%.1f"
     )
+    inputs['coverage_ratio'] = _make_slider(
+        'panel_rating',
+        default_inputs['panel_rating'],
+        unit="",
+        min_value=0.0, max_value=1.0, step=0.1,
+        format="%.1f"
+    )
 
+
+
+# -------------------------------------------------
+# 4. Grouped sections
+# -------------------------------------------------
+
+with st.sidebar.expander("Costs", expanded=False):
+ 
     # ---- CAPEX (slider, fixed format) ----
     inputs['capital_cost_per_kwp'] = _make_slider(
         'capital_cost_per_kwp',
@@ -491,6 +500,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
