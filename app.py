@@ -161,8 +161,8 @@ for param, value in default_inputs.items():
     if isinstance(value, int):
         step = 1 if param in ['project_lifespan', 'bond_term'] else 1_000_000
         formatted = f"{value:,}"
-        # user = st.sidebar.text_input(label, formatted)
-        user = st.sidebar.slider(label, formatted)
+        user = st.sidebar.text_input(label, formatted)
+        # user = st.sidebar.slider(label, formatted)
         try:
             inputs[param] = int(user.replace(',', '').strip())
         except Exception:
@@ -404,6 +404,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
