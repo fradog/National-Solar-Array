@@ -194,6 +194,7 @@ annual_energy_goal, required_area = target_total_energy(inputs)
 bond_principal, carbon_tax_10yr = calculate_bond_principal(inputs)
 cash_flows_df = calculate_cash_flows(inputs, bond_principal, project_lifespan=inputs['project_lifespan'])
 cash_flows_df['Cumulative Post-Debt Cash Flow ($B)'] = cash_flows_df['Cash Flow Post-Debt ($B)'].cumsum()
+final_energy_twh = cash_flows_df['Energy Yield (TWh)'] 
 
 funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
@@ -211,7 +212,7 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          f"</span>",
          unsafe_allow_html=True)
 st.write(f"**Target Annual Energy**: {target_energy_twh:,.0f} TWh")
-st.write(f"**System Annual Energy**: {cash_flows_df['Energy Yield (TWh)']:,.0f} TWh")
+st.write(f"**System Annual Energy**: {final_energy_twh:,.0f} TWh")
 st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage: {inputs['coverage_ratio']:.2f})")
 
 # LCOE
@@ -382,6 +383,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
