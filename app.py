@@ -239,7 +239,6 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         min_value=0.05, max_value=0.30, step=0.001,
         format="$%.3f"
     )
-
     inputs['avoided_fuel_per_kwh'] = _make_slider(
         'avoided_fuel_per_kwh',
         default_inputs['avoided_fuel_per_kwh'],
@@ -254,7 +253,7 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         min_value=0.00, max_value=200.00, step=5.00,
         format="$%.0f"
     )
-        inputs['carbon_tax_effective_rate'] = _make_slider(
+    inputs['carbon_tax_effective_rate'] = _make_slider(
         'carbon_tax_effective_rate',
         default_inputs['carbon_tax_effective_rate'],
         unit="",
@@ -519,6 +518,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
