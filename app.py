@@ -144,9 +144,20 @@ inputs['initial_capacity'] = st.sidebar.slider("Initial Capacity (GWp)", 0, 1000
 inputs['target_capacity'] = st.sidebar.slider("Target Capacity (GWp)", 3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
 inputs['us_adult_population'] = st.sidebar.slider("US Adult Population (M)", 200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
 
-# All other inputs
+# === SKIP EFFICIENCY SLIDERS IN SIDEBAR (they're in main body) ===
+EFFICIENCY_PARAMS = {
+    'vehicle_ice_eff',
+    'vehicle_elec_eff',
+    'utility_ice_elec_eff'
+}
+
+# All other inputs (skip efficiency ones)
 for param, value in default_inputs.items():
-    if param in inputs: continue
+    if param in inputs: 
+        continue
+    if param in EFFICIENCY_PARAMS:
+        continue  # Skip — already in main body
+
     label = param.replace('_', ' ').title()
 
     if isinstance(value, int):
@@ -163,6 +174,7 @@ for param, value in default_inputs.items():
         max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0
         fmt = "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
         inputs[param] = st.sidebar.slider(label, 0.0, max_val, value, step, format=fmt)
+
 
 # =============================================
 # LCOE VALIDATION MODE (ONE TOGGLE)
@@ -370,6 +382,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
