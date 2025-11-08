@@ -211,7 +211,7 @@ with st.sidebar.expander("Costs", expanded=False):
         'capital_cost_per_kwp',
         default_inputs['capital_cost_per_kwp'],
         unit="$/kWp",
-        min_value=500, max_value=3_000, step=10,
+        min_value=500, max_value=3000, step=10,
         format="$%,.0f"   # ← FIXED: was "$%,d"
     )
 
@@ -227,7 +227,7 @@ with st.sidebar.expander("Costs", expanded=False):
         'grid_maintenance',
         default_inputs['grid_maintenance'],
         unit="$B/yr",
-        min_value=0, max_value=200_000_000_000, step=5_000_000_000,
+        min_value=0, max_value=200000000000, step=5000000000,
         format="$%,.0f"
     )
 
@@ -518,6 +518,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
