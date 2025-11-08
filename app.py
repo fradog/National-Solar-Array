@@ -160,7 +160,7 @@ def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
 # -------------------------------------------------
 # 3. System Scale (already sliders – keep as-is)
 # -------------------------------------------------
-with st.sidebar.expander("System Scale", expanded=True):
+with st.sidebar.expander("System Scale", expanded=False):
     inputs['initial_capacity'] = st.slider(
         "Initial Capacity (GWp)",
         0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
@@ -170,13 +170,20 @@ with st.sidebar.expander("System Scale", expanded=True):
     inputs['us_adult_population'] = st.slider(
         "US Adult Population (M)",
         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
+    inputs['capacity_factor'] = _make_slider(
+        'capacity_factor',
+        default_inputs['capacity_factor'],
+        unit="",
+        min_value=0.15, max_value=0.31, step=0.0001,
+        format="%.4f"
+    )
     inputs['panel_rating'] = _make_slider(
         'panel_rating',
         default_inputs['panel_rating'],
         unit="W/m²",
         min_value=200.0, max_value=350.0, step=0.1,
         format="%.1f"
-        )
+    )
     inputs['coverage_ratio'] = _make_slider(
         'Coverage Ratio',
         default_inputs['coverage_ratio'],
@@ -188,7 +195,7 @@ with st.sidebar.expander("System Scale", expanded=True):
         'Degradation Rate',
         default_inputs['degradation_rate'],
         unit="",
-        min_value=0.000, max_value=1.000, step=0.005,
+        min_value=0.000, max_value=0.015, step=0.005,
         format="%.3f"
     )
 
@@ -241,13 +248,6 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         format="$%.3f"
     )
 
-    inputs['capacity_factor'] = _make_slider(
-        'capacity_factor',
-        default_inputs['capacity_factor'],
-        unit="",
-        min_value=0.15, max_value=0.31, step=0.0001,
-        format="%.4f"
-    )
 
 with st.sidebar.expander("Financing", expanded=False):
     inputs['bond_interest_rate'] = _make_slider(
@@ -505,6 +505,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
