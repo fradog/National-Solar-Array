@@ -190,52 +190,6 @@ for param, value in default_inputs.items():
         format=fmt
     )
 
-
-
-# # =============================================
-# # SIDEBAR INPUTS
-# # =============================================
-# st.sidebar.header("Input Parameters")
-# inputs = {}
-
-# # System Scale
-# st.sidebar.subheader("System Scale")
-# inputs['initial_capacity'] = st.sidebar.slider("Initial Capacity (GWp)", 0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
-# inputs['target_capacity'] = st.sidebar.slider("Target Capacity (GWp)", 3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
-# inputs['us_adult_population'] = st.sidebar.slider("US Adult Population (M)", 200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-
-# # === SKIP EFFICIENCY SLIDERS IN SIDEBAR (they're in main body) ===
-# EFFICIENCY_PARAMS = {
-#     'vehicle_ice_eff',
-#     'vehicle_elec_eff',
-#     'utility_ice_elec_eff'
-# }
-
-# # All other inputs (skip efficiency ones)
-# for param, value in default_inputs.items():
-#     if param in inputs: 
-#         continue
-#     if param in EFFICIENCY_PARAMS:
-#         continue  # Skip — already in main body
-
-#     label = param.replace('_', ' ').title()
-
-#     if isinstance(value, int):
-#         step = 1 if param in ['project_lifespan', 'bond_term'] else 1_000_000
-#         formatted = f"{value:,}"
-#         user = st.sidebar.text_input(label, formatted)
-#         try:
-#             inputs[param] = int(user.replace(',', '').strip())
-#         except:
-#             st.sidebar.warning(f"Invalid {label}. Using default.")
-#             inputs[param] = value
-#     else:
-#         step = 0.0001 if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else 0.001
-#         max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0 if param not in ['capacity_factor'] else 0.31
-#         fmt = "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
-#         inputs[param] = st.sidebar.slider(label, 0.0, max_val, value, step, format=fmt)
-
-
 # =============================================
 # LCOE VALIDATION MODE (ONE TOGGLE)
 # =============================================
@@ -262,6 +216,7 @@ metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
 target_energy_quads = efficiency_upgrade_ratio * 77.10
 target_energy_twh = target_energy_quads * 293.07
 final_energy_twh = cash_flows_df.loc[cash_flows_df['Year'] == 30, 'Energy Yield (TWh)'].iloc[0] 
+energy_gap = target_energy_twh - final_energy_twh
 
 st.header("System Size")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
@@ -274,6 +229,11 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
 st.write(f"**Target Annual Energy**: {target_energy_twh:,.0f} TWh")
 st.write(f"**System Annual Energy**: {final_energy_twh:,.0f} TWh")
 st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage: {inputs['coverage_ratio']:.2f})")
+st.metric(
+    "Energy Gap (Target vs. Year 30)",
+    f"{energy_gap:,.0f} TWh",
+    delta=f"{(energy_gap / target_energy_twh)*100:+.1f}%"
+)
 
 # LCOE
 lcoe_full = calculate_lcoe_simple(inputs)
@@ -443,6 +403,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
