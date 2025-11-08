@@ -293,7 +293,7 @@ with col1:
     st.metric("**Your Model (PV (+ Battery Storage) + Degradation)**", f"${lcoe_full['LCOE ($/MWh)']:.2f}/MWh")
     st.caption(f"→ {lcoe_full['LCOE ($/MWh)']/1000:.6f} $/kWh")
 with col2:
-    delta = lcoe_full['LCOE ($/MWh)'] - nrel_lcoe
+    delta = nrel_lcoe - lcoe_full['LCOE ($/MWh)'] 
     st.metric("**NREL ATB Style (PV (+ Battery Storage) FCR, no Degradation.)**", f"${nrel_lcoe:.2f}/MWh", f"{delta:+.2f} $/MWh", delta_color="inverse")
 
 # Validation result
@@ -403,6 +403,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
