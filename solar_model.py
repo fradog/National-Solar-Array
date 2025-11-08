@@ -101,7 +101,8 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
     
     data = {
         'Year': list(range(1, project_lifespan + 1)),
-        'New Capacity (MWp)': [],
+        'New Capacity (GWp)': [],
+        'Cumulative Capacity (GWp)': [],
         'Cash Flow Pre-Debt ($B)': [],
         'Total Costs ($B)': [],
         'Total Inflows ($B)': [],
@@ -418,6 +419,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
