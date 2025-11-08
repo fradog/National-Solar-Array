@@ -228,7 +228,7 @@ with st.sidebar.expander("Costs", expanded=False):
         default_inputs['grid_maintenance'],
         unit="$/yr",
         min_value=0, max_value=200000000000, step=5000000000,
-        format="%,.0f"
+        format="$%.0f"
     )
 
 with st.sidebar.expander("Revenue & Savings", expanded=False):
@@ -251,14 +251,14 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         default_inputs['carbon_tax_rate'],
         unit="$/ton",
         min_value=0.00, max_value=200.00, step=5.00,
-        format="$%.0f"
+        format="%.0f"
     )
     inputs['carbon_tax_effective_rate'] = _make_slider(
         'carbon_tax_effective_rate',
         default_inputs['carbon_tax_effective_rate'],
         unit="",
         min_value=0.50, max_value=1.00, step=0.05,
-        format="$%.2f"
+        format="%.2f"
     )
 
 
@@ -518,6 +518,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
