@@ -82,7 +82,7 @@ default_inputs = {
     'participation_rate_low': 0.05,
     'participation_rate_mid': 0.10,
     'participation_rate_high': 0.15,
-    'carbon_tax_rate': 100,
+    'carbon_tax_rate': 100.00,
     'us_emissions_tons': 4_700_000_000,
     'carbon_tax_effective_rate': 0.75,
     'displaceable_proportion': 1.0,
@@ -247,6 +247,14 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         min_value=0.0, max_value=0.10, step=0.001,
         format="$%.3f"
     )
+    inputs['carbon_tax_rate'] = _make_slider(
+        'carbon_tax_rate',
+        default_inputs['carbon_tax_rate'],
+        unit="$/ton",
+        min_value=0.00, max_value=200, step=5,
+        format="$%.0f"
+    )
+    
 
 
 with st.sidebar.expander("Financing", expanded=False):
@@ -505,6 +513,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
