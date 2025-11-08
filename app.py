@@ -178,15 +178,15 @@ with st.sidebar.expander("System Scale", expanded=True):
         format="%.1f"
         )
     inputs['coverage_ratio'] = _make_slider(
-        'panel_rating',
-        default_inputs['panel_rating'],
+        'Coverage Ratio',
+        default_inputs['coverage_ratio'],
         unit="",
         min_value=0.0, max_value=1.0, step=0.1,
         format="%.1f"
     )
-    inputs['degradation_ratio'] = _make_slider(
-        'panel_rating',
-        default_inputs['panel_rating'],
+    inputs['degradation_rate'] = _make_slider(
+        'Degradation Rate',
+        default_inputs['degradation_rate'],
         unit="",
         min_value=0.000, max_value=1.000, step=0.005,
         format="%.3f"
@@ -505,6 +505,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
