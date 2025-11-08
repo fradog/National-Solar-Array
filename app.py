@@ -251,7 +251,7 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         'carbon_tax_rate',
         default_inputs['carbon_tax_rate'],
         unit="$/ton",
-        min_value=0.00, max_value=200, step=5,
+        min_value=0.00, max_value=200.00, step=5.00,
         format="$%.0f"
     )
     
@@ -513,6 +513,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
