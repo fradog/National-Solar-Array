@@ -160,7 +160,8 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
         investor_dividend = dividend_amount * investor_share
         investor_cash_flow = investor_interest + investor_principal + investor_dividend
         
-        data['New Capacity (MWp)'].append(total_new_capacity / 10**6)
+        data['New Capacity (GWp)'].append(total_new_capacity / 10**6)
+        data['Cumulative Capacity (GWp)'].append(cumulative_capacity / 10**6)
         data['Cash Flow Pre-Debt ($B)'].append(net_cash_flow_pre_debt / 10**9)
         data['Total Costs ($B)'].append(total_annual_costs / 10**9)
         data['Total Inflows ($B)'].append(total_annual_inflows / 10**9)
@@ -417,6 +418,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
