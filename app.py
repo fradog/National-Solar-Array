@@ -171,7 +171,7 @@ for param, value in default_inputs.items():
             inputs[param] = value
     else:
         step = 0.0001 if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else 0.001
-        max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0
+        max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0 if param not in ['capacity_factor'] else 0.31
         fmt = "%.4f" if param in ['capacity_factor', 'degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
         inputs[param] = st.sidebar.slider(label, 0.0, max_val, value, step, format=fmt)
 
@@ -383,6 +383,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
