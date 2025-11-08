@@ -260,7 +260,13 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         min_value=0.50, max_value=1.00, step=0.05,
         format="%.2f"
     )
-
+    inputs['displaceable_proportion'] = _make_slider(
+        'displaceable_proportion',
+        default_inputs['displaceable_proportion'],
+        unit="",
+        min_value=0.00, max_value=1.00, step=0.05,
+        format="%.2f"
+    )
 
 with st.sidebar.expander("Financing", expanded=False):
     inputs['bond_interest_rate'] = _make_slider(
@@ -518,6 +524,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
