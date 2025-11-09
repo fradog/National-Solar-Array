@@ -206,7 +206,7 @@ with st.sidebar.expander("Costs", expanded=False):
     inputs['capital_cost_per_kwp'] = _make_slider(
         st, 'capital_cost_per_kwp', default_inputs['capital_cost_per_kwp'],
         unit="$/kWp", min_value=500, max_value=3_000, step=10,
-        format="$%,.0f"
+        format="$%.0f"
     )
     inputs['om_rate'] = _make_slider(
         st, 'om_rate', default_inputs['om_rate'],
@@ -216,7 +216,7 @@ with st.sidebar.expander("Costs", expanded=False):
     inputs['grid_maintenance'] = _make_slider(
         st, 'grid_maintenance', default_inputs['grid_maintenance'],
         unit="$B/yr", min_value=0, max_value=200_000_000_000,
-        step=5_000_000_000, format="$%,.0f"
+        step=5_000_000_000, format="$%.0f"
     )
 
 # -------------------------------------------------
@@ -300,7 +300,7 @@ with st.sidebar.expander("Bond Financing", expanded=False):
     inputs['individual_investment'] = _make_slider(
         st, 'individual_investment', default_inputs['individual_investment'],
         unit="$", min_value=0, max_value=100_000, step=100,
-        format="$%,.0f"
+        format="$%.0f"
     )
     inputs['participation_rate_low'] = _make_slider(
         st, 'participation_rate_low',
@@ -770,6 +770,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
