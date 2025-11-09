@@ -287,6 +287,13 @@ with st.sidebar.expander("ReInvestment Parameters", expanded=True):
         min_value=0.0, max_value=1.0, step=0.05,
         format="%.2f"
     )
+    inputs['discount_rate'] = _make_slider(
+        'discount_rate',
+        default_inputs['discount_rate'],
+        unit="%/100",
+        min_value=0.0, max_value=0.200, step=0.005,
+        format="%.3f"
+    )
 
 with st.sidebar.expander("Bond Financing", expanded=True):
     inputs['bond_interest_rate'] = _make_slider(
@@ -596,6 +603,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
