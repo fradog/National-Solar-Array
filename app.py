@@ -268,7 +268,7 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         format="%.2f"
     )
 
-with st.sidebar.expander("Financing", expanded=False):
+with st.sidebar.expander("Bond Financing", expanded=False):
     inputs['bond_interest_rate'] = _make_slider(
         'bond_interest_rate',
         default_inputs['bond_interest_rate'],
@@ -293,6 +293,13 @@ with st.sidebar.expander("Financing", expanded=False):
         unit="",
         min_value=0.0, max_value=1.0, step=0.05,
         format="%.2f"
+    )
+    inputs['individual_investment'] = _make_slider(
+        'individual_investment',
+        default_inputs['individual_investment'],
+        unit="$",
+        min_value=0.0, max_value=100,000.0, step=100.0,
+        format="%.0f"
     )
 
 # -------------------------------------------------
@@ -524,6 +531,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
