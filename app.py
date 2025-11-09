@@ -234,7 +234,7 @@ with st.sidebar.expander("Costs", expanded=False):
         format="$%.0f"
     )
 
-with st.sidebar.expander("Revenue & Savings", expanded=False):
+with st.sidebar.expander("Revenue & Savings", expanded=True):
     inputs['revenue_per_kwh'] = _make_slider(
         'revenue_per_kwh',
         default_inputs['revenue_per_kwh'],
@@ -250,7 +250,8 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         format="$%.3f"
     )
     inputs['us_emissions_tons'] = st.text_input(
-        "Annual U.S. CO2e Emissions (tons)", default_inputs['us_emissions_tons'])
+        "Annual U.S. CO2e Emissions (tons)", default_inputs['us_emissions_tons']
+    )
     inputs['carbon_tax_rate'] = _make_slider(
         'carbon_tax_rate',
         default_inputs['carbon_tax_rate'],
@@ -275,7 +276,7 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
 
 
 
-with st.sidebar.expander("ReInvestment Parameters", expanded=False):
+with st.sidebar.expander("ReInvestment Parameters", expanded=True):
     inputs['reinvestment_percentage'] = _make_slider(
         'reinvestment_percentage',
         default_inputs['reinvestment_percentage'],
@@ -284,7 +285,7 @@ with st.sidebar.expander("ReInvestment Parameters", expanded=False):
         format="%.2f"
     )
 
-with st.sidebar.expander("Bond Financing", expanded=False):
+with st.sidebar.expander("Bond Financing", expanded=True):
     inputs['bond_interest_rate'] = _make_slider(
         'bond_interest_rate',
         default_inputs['bond_interest_rate'],
@@ -309,6 +310,13 @@ with st.sidebar.expander("Bond Financing", expanded=False):
         unit="$",
         min_value=0, max_value=100000, step=100,
         format="%.0f"
+    )
+    inputs['investment_return_rate'] = _make_slider(
+        'investment_return_rate',
+        default_inputs['investment_return_rate'],
+        unit="",
+        min_value=0, max_value=.200, step=.005,
+        format="%.3f"
     )
     
 # -------------------------------------------------
@@ -540,6 +548,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
