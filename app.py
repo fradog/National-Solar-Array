@@ -321,22 +321,46 @@ with st.sidebar.expander("Bond Financing", expanded=True):
         min_value=0.0, max_value=0.200, step=0.005,
         format="%.3f"
     )
-    
+
 # -------------------------------------------------
-# 5. Remaining integer parameters (still text boxes)
+# 6. TYPE CONVERSION – everything must be int/float
 # -------------------------------------------------
-for param, value in default_inputs.items():
-    if param in inputs or param in SKIP_EFFICIENCY:
+def _to_num(val, is_int=False):
+    """Convert text → int/float, fall back to default on error."""
+    try:
+        if is_int:
+            return int(float(val.replace(',', '')))
+        return float(val.replace(',', ''))
+    except Exception:
+        return default_inputs.get(val, val)   # fallback
+
+# ---- integers ------------------------------------------------
+for k in ['project_lifespan', 'bond_term', 'individual_investment',
+          'us_adult_population', 'initial_capacity', 'target_capacity']:
+    if k in inputs:
+        inputs[k] = _to_num(inputs[k], is_int=True)
+
+# ---- floats --------------------------------------------------
+for k in default_inputs:
+    if k not in inputs or k in SKIP_EFFICIENCY:
         continue
-    if isinstance(value, int):
-        label = param.replace('_', ' ').title()
-        formatted = f"{value:,}"
-        user = st.sidebar.text_input(label, formatted)
-        try:
-            inputs[param] = int(user.replace(',', '').strip())
-        except Exception:
-            st.sidebar.warning(f"Invalid {label}. Using default.")
-            inputs[param] = value
+    inputs[k] = _to_num(inputs[k], is_int=False)
+
+# # -------------------------------------------------
+# # 5. Remaining integer parameters (still text boxes)
+# # -------------------------------------------------
+# for param, value in default_inputs.items():
+#     if param in inputs or param in SKIP_EFFICIENCY:
+#         continue
+#     if isinstance(value, int):
+#         label = param.replace('_', ' ').title()
+#         formatted = f"{value:,}"
+#         user = st.sidebar.text_input(label, formatted)
+#         try:
+#             inputs[param] = int(user.replace(',', '').strip())
+#         except Exception:
+#             st.sidebar.warning(f"Invalid {label}. Using default.")
+#             inputs[param] = value
 
 # =============================================
 # LCOE VALIDATION MODE (ONE TOGGLE)
@@ -551,6 +575,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
