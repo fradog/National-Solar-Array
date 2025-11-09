@@ -321,6 +321,27 @@ with st.sidebar.expander("Bond Financing", expanded=True):
         min_value=0.0, max_value=0.200, step=0.005,
         format="%.3f"
     )
+    inputs['participation_rate_low'] = _make_slider(
+        'participation_rate_low',
+        default_inputs['participation_rate_low'],
+        unit="",
+        min_value=0.0, max_value=0.10, step=0.05,
+        format="%.2f"
+    )
+     inputs['participation_rate_mid'] = _make_slider(
+        'participation_rate_mid',
+        default_inputs['participation_rate_mid'],
+        unit="",
+        min_value=0.0, max_value=0.50, step=0.05,
+        format="%.2f"
+    )
+    inputs['participation_rate_high'] = _make_slider(
+        'participation_rate_high',
+        default_inputs['participation_rate_high'],
+        unit="",
+        min_value=0.0, max_value=1.00, step=0.05,
+        format="%.2f"
+    )
 
 # -------------------------------------------------
 # 6. TYPE CONVERSION – everything must be int/float
@@ -575,6 +596,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
