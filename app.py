@@ -162,7 +162,7 @@ def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
 # -------------------------------------------------
 with st.sidebar.expander("System Scale", expanded=True):
     inputs['project_lifespan'] = st.text_input(
-        "Project_Lifespan (Yrs)",default_inputs['project_lifespan']
+        "Project_Lifespan (Yrs)", default_inputs['project_lifespan']
     )
     inputs['initial_capacity'] = st.slider(
         "Initial Capacity (GWp)",
@@ -173,7 +173,7 @@ with st.sidebar.expander("System Scale", expanded=True):
     inputs['us_adult_population'] = st.slider(
         "US Adult Population (M)",
         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-    inputs['capacity_fachttps://myturn.ca.gov/tor'] = _make_slider(
+    inputs['capacity_factor'] = _make_slider(
         'capacity_factor',
         default_inputs['capacity_factor'],
         unit="",
@@ -540,6 +540,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
