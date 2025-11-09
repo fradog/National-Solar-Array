@@ -83,7 +83,7 @@ default_inputs = {
     'participation_rate_mid': 0.10,
     'participation_rate_high': 0.15,
     'carbon_tax_rate': 100.00,
-    'us_emissions_tons': 4_700_000_000,
+    'us_emissions_tons': 4700000000,
     'carbon_tax_effective_rate': 0.75,
     'displaceable_proportion': 1.0,
     'panel_rating': 700 / 2.57,
@@ -551,6 +551,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
