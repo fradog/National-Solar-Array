@@ -315,7 +315,7 @@ with st.sidebar.expander("Bond Financing", expanded=True):
         'investment_return_rate',
         default_inputs['investment_return_rate'],
         unit="",
-        min_value=0, max_value=.200, step=.005,
+        min_value=0.0, max_value=0.200, step=0.005,
         format="%.3f"
     )
     
@@ -548,6 +548,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
