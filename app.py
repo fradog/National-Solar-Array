@@ -328,7 +328,7 @@ with st.sidebar.expander("Bond Financing", expanded=True):
         min_value=0.0, max_value=0.10, step=0.05,
         format="%.2f"
     )
-     inputs['participation_rate_mid'] = _make_slider(
+    inputs['participation_rate_mid'] = _make_slider(
         'participation_rate_mid',
         default_inputs['participation_rate_mid'],
         unit="",
@@ -596,6 +596,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
