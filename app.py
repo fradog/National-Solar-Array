@@ -182,10 +182,6 @@ with st.sidebar.expander("System Scale", expanded=True):
         "Target Capacity (GWp)", 3000, 7000,
         int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
 
-    inputs['us_adult_population'] = st.slider(
-        "US Adult Population (M)", 200, 300,
-        int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-
     inputs['capacity_factor'] = _make_slider(
         st, 'capacity_factor', default_inputs['capacity_factor'],
         unit="", min_value=0.15, max_value=0.31, step=0.0001, format="%.4f"
@@ -282,6 +278,11 @@ with st.sidebar.expander("Reinvestment", expanded=False):
 # 7. Bond Financing
 # -------------------------------------------------
 with st.sidebar.expander("Bond Financing", expanded=False):
+    
+    inputs['us_adult_population'] = st.slider(
+        "US Adult Population (M)", 200, 300,
+        int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
+    
     inputs['bond_interest_rate'] = _make_slider(
         st, 'bond_interest_rate', default_inputs['bond_interest_rate'],
         unit="", min_value=0.0, max_value=0.10, step=0.001,
@@ -769,6 +770,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
