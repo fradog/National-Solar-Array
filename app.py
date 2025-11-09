@@ -161,6 +161,8 @@ def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
 # 3. System Scale (already sliders – keep as-is)
 # -------------------------------------------------
 with st.sidebar.expander("System Scale", expanded=False):
+    inputs['project_lifespan'] = st.text_input(
+        "Project_Lifespan (Yrs)",value=int)
     inputs['initial_capacity'] = st.slider(
         "Initial Capacity (GWp)",
         0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
@@ -170,7 +172,7 @@ with st.sidebar.expander("System Scale", expanded=False):
     inputs['us_adult_population'] = st.slider(
         "US Adult Population (M)",
         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-    inputs['capacity_factor'] = _make_slider(
+    inputs['capacity_fachttps://myturn.ca.gov/tor'] = _make_slider(
         'capacity_factor',
         default_inputs['capacity_factor'],
         unit="",
@@ -235,14 +237,14 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
     inputs['revenue_per_kwh'] = _make_slider(
         'revenue_per_kwh',
         default_inputs['revenue_per_kwh'],
-        unit="$/kWh",
+        unit="$/KWh",
         min_value=0.05, max_value=0.30, step=0.001,
         format="$%.3f"
     )
     inputs['avoided_fuel_per_kwh'] = _make_slider(
         'avoided_fuel_per_kwh',
         default_inputs['avoided_fuel_per_kwh'],
-        unit="$/kWh",
+        unit="$/KWh",
         min_value=0.0, max_value=0.10, step=0.001,
         format="$%.3f"
     )
@@ -268,6 +270,17 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         format="%.2f"
     )
 
+
+
+with st.sidebar.expander("ReInvestment Parameters", expanded=False):
+    inputs['reinvestment_percentage'] = _make_slider(
+        'reinvestment_percentage',
+        default_inputs['reinvestment_percentage'],
+        unit="%/100",
+        min_value=0.0, max_value=1.0, step=0.05,
+        format="%.2f"
+    )
+
 with st.sidebar.expander("Bond Financing", expanded=False):
     inputs['bond_interest_rate'] = _make_slider(
         'bond_interest_rate',
@@ -280,19 +293,12 @@ with st.sidebar.expander("Bond Financing", expanded=False):
         "Bond Term (years)", min_value=1, max_value=30,
         value=default_inputs['bond_term'], step=1)
 
-    inputs['reinvestment_percentage'] = _make_slider(
-        'reinvestment_percentage',
-        default_inputs['reinvestment_percentage'],
-        unit="",
-        min_value=0.0, max_value=1.0, step=0.05,
-        format="%.2f"
-    )
     inputs['dividend_percentage'] = _make_slider(
         'dividend_percentage',
         default_inputs['dividend_percentage'],
-        unit="",
-        min_value=0.0, max_value=1.0, step=0.05,
-        format="%%.0f"
+        unit="%/100",
+        min_value=0.00, max_value=1.00, step=0.05,
+        format="%.2f"
     )
     inputs['individual_investment'] = _make_slider(
         'individual_investment',
@@ -531,6 +537,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
