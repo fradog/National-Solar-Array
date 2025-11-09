@@ -160,9 +160,10 @@ def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
 # -------------------------------------------------
 # 3. System Scale (already sliders – keep as-is)
 # -------------------------------------------------
-with st.sidebar.expander("System Scale", expanded=False):
+with st.sidebar.expander("System Scale", expanded=True):
     inputs['project_lifespan'] = st.text_input(
-        "Project_Lifespan (Yrs)",value)
+        "Project_Lifespan (Yrs)",default_inputs['project_lifespan']
+    )
     inputs['initial_capacity'] = st.slider(
         "Initial Capacity (GWp)",
         0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
@@ -537,6 +538,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
