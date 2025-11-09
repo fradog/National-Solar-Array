@@ -163,7 +163,6 @@ def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
 with st.sidebar.expander("System Scale", expanded=True):
     inputs['project_lifespan'] = st.text_input(
         "Project_Lifespan (Yrs)",default_inputs['project_lifespan']
-    )
     inputs['initial_capacity'] = st.slider(
         "Initial Capacity (GWp)",
         0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
@@ -249,6 +248,8 @@ with st.sidebar.expander("Revenue & Savings", expanded=False):
         min_value=0.0, max_value=0.10, step=0.001,
         format="$%.3f"
     )
+    inputs['us_emissions_tons'] = st.text_input(
+        "Annual U.S. CO2e Emissions (tons)", default_inputs['us_emissions_tons'])
     inputs['carbon_tax_rate'] = _make_slider(
         'carbon_tax_rate',
         default_inputs['carbon_tax_rate'],
@@ -538,6 +539,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
