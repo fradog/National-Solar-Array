@@ -368,7 +368,7 @@ metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
 target_energy_quads = efficiency_upgrade_ratio * mix_inputs['total_energy_quads']       #77.10
 target_energy_twh = target_energy_quads * 293.07
 final_energy_twh = cash_flows_df.loc[cash_flows_df['Year'] == 30, 'Energy Yield (TWh)'].iloc[0] 
-energy_gap = target_energy_twh - final_energy_twh
+energy_gap = final_energy_twh - target_energy_twh 
 
 st.header("System Size")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
@@ -555,6 +555,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
