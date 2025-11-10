@@ -82,8 +82,8 @@ default_inputs = {
     'participation_rate_low': 0.05,
     'participation_rate_mid': 0.10,
     'participation_rate_high': 0.15,
-    'carbon_tax_rate': 100,
-    'us_emissions_tons': 4_700_000_000,
+    'carbon_tax_rate': 100.00,
+    'us_emissions_tons': 4700000000,
     'carbon_tax_effective_rate': 0.75,
     'displaceable_proportion': 1.0,
     'panel_rating': 700 / 2.57,
@@ -132,64 +132,430 @@ efficiency_upgrade_ratio = calculate_efficiency_upgrade(mix_inputs)
 default_inputs['efficiency_upgrade'] = efficiency_upgrade_ratio
 st.write(f"**Efficiency Upgrade Ratio**: {efficiency_upgrade_ratio:,.3f}")
 
-# === SIDEBAR INPUTS ===
+# =============================================
+# SIDEBAR INPUTS – GROUPED & CUSTOM LABELS
+# =============================================
 st.sidebar.header("Input Parameters")
 inputs = {}
 
-# System Scale
-st.sidebar.subheader("System Scale")
-inputs['initial_capacity'] = st.sidebar.slider("Initial Capacity (GWp)", 0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
-inputs['target_capacity'] = st.sidebar.slider("Target Capacity (GWp)", 3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
-inputs['us_adult_population'] = st.sidebar.slider("US Adult Population (M)", 200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-
-# === SKIP EFFICIENCY SLIDERS (already in main body) ===
-EFFICIENCY_PARAMS = {
+# -------------------------------------------------
+# 1. Helper: skip efficiency params (they live in main body)
+# -------------------------------------------------
+SKIP_EFFICIENCY = {
     'vehicle_ice_eff',
     'vehicle_elec_eff',
     'utility_ice_elec_eff'
 }
 
-# All other inputs
-for param, value in default_inputs.items():
-    if param in inputs:                     # already set
-        continue
-    if param in EFFICIENCY_PARAMS:          # skip — in main body
-        continue
+# -------------------------------------------------
+# 2. Custom label + slider logic
+# -------------------------------------------------
+def _make_slider(container, param: str, default: float | int, unit: str = "", **kwargs):
+    """Create a slider inside the given container (expander, sidebar, etc.)"""
+    pretty = param.replace('_', ' ').title()
+    label = f"{pretty} {unit}".strip()
+    return container.slider(label, value=default, **kwargs)
 
-    label = param.replace('_', ' ').title()
-
-    if isinstance(value, int):
-        step = 1 if param in ['project_lifespan', 'bond_term'] else 1_000_000
-        formatted = f"{value:,}"
-        user = st.sidebar.text_input(label, formatted)
-        # user = st.sidebar.slider(label, formatted)
-        try:
-            inputs[param] = int(user.replace(',', '').strip())
-        except Exception:
-            st.sidebar.warning(f"Invalid {label}. Using default.")
-            inputs[param] = value
-        continue
-
-    # Float parameters
-    if param == 'capacity_factor':
-        max_val = 0.31
-        step    = 0.0001
-        min_val = 0.15
-        fmt     = "%.4f"
-    else:
-        step = 0.0001 if param in ['degradation_rate', 'om_rate', 'revenue_per_kwh'] else 0.001
-        max_val = value * 2 if param not in ['carbon_tax_effective_rate', 'displaceable_proportion'] else 1.0
-        min_val = 0.0
-        fmt = "%.4f" if param in ['degradation_rate', 'om_rate', 'revenue_per_kwh'] else "%.3f"
-
-    inputs[param] = st.sidebar.slider(
-        label,
-        min_value=min_val,
-        max_value=max_val,
-        value=value,
-        step=step,
-        format=fmt
+# def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
+#     """Create a slider with a *custom* label that includes the unit."""
+#     # Build a pretty label:  "Revenue Per KWh"  →  "Consumer Energy Price $/kWh"
+#     pretty = param.replace('_', ' ').title()
+#     label = f"{pretty} {unit}".strip()
+#     return st.sidebar.slider(label, value=default, **kwargs)
+# -------------------------------------------------
+# 3. System Scale (mixed – keep as-is)
+# -------------------------------------------------
+with st.sidebar.expander("System Scale", expanded=True):
+    # text boxes for lifespan & efficiency (you wanted them here)
+    inputs['project_lifespan'] = st.text_input(
+        "Project Lifespan (Yrs)", value=str(default_inputs['project_lifespan'])
     )
+    inputs['efficiency_upgrade'] = st.text_input(
+        "Efficiency Upgrade Ratio", value=f"{efficiency_upgrade_ratio:,.3f}"
+    )
+
+    inputs['initial_capacity'] = st.slider(
+        "Initial Capacity (GWp)", 0, 1000,
+        int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
+
+    inputs['target_capacity'] = st.slider(
+        "Target Capacity (GWp)", 3000, 7000,
+        int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
+
+    inputs['capacity_factor'] = _make_slider(
+        st, 'capacity_factor', default_inputs['capacity_factor'],
+        unit="", min_value=0.15, max_value=0.31, step=0.0001, format="%.4f"
+    )
+    inputs['panel_rating'] = _make_slider(
+        st, 'panel_rating', default_inputs['panel_rating'],
+        unit="W/m²", min_value=200.0, max_value=350.0, step=0.1, format="%.1f"
+    )
+    inputs['coverage_ratio'] = _make_slider(
+        st, 'coverage_ratio', default_inputs['coverage_ratio'],
+        unit="", min_value=0.0, max_value=1.0, step=0.05, format="%.2f"
+    )
+    inputs['degradation_rate'] = _make_slider(
+        st, 'degradation_rate', default_inputs['degradation_rate'],
+        unit="/yr", min_value=0.0, max_value=0.015, step=0.001, format="%.3f"
+    )
+
+# -------------------------------------------------
+# 4. Costs
+# -------------------------------------------------
+with st.sidebar.expander("Costs", expanded=False):
+    inputs['capital_cost_per_kwp'] = _make_slider(
+        st, 'capital_cost_per_kwp', default_inputs['capital_cost_per_kwp'],
+        unit="$/kWp", min_value=500, max_value=3_000, step=10,
+        format="$%.0f"
+    )
+    inputs['om_rate'] = _make_slider(
+        st, 'om_rate', default_inputs['om_rate'],
+        unit="(fraction/yr)", min_value=0.0, max_value=0.05, step=0.001,
+        format="%.3f"
+    )
+    inputs['grid_maintenance'] = _make_slider(
+        st, 'grid_maintenance', default_inputs['grid_maintenance'],
+        unit="$B/yr", min_value=0, max_value=200_000_000_000,
+        step=5_000_000_000, format="$%.0f"
+    )
+
+# -------------------------------------------------
+# 5. Revenue & Savings
+# -------------------------------------------------
+with st.sidebar.expander("Revenue & Savings", expanded=False):
+    inputs['revenue_per_kwh'] = _make_slider(
+        st, 'revenue_per_kwh', default_inputs['revenue_per_kwh'],
+        unit="$/kWh", min_value=0.05, max_value=0.30, step=0.001,
+        format="$%.3f"
+    )
+    inputs['avoided_fuel_per_kwh'] = _make_slider(
+        st, 'avoided_fuel_per_kwh', default_inputs['avoided_fuel_per_kwh'],
+        unit="$/kWh", min_value=0.0, max_value=0.10, step=0.001,
+        format="$%.3f"
+    )
+    inputs['carbon_tax_rate'] = _make_slider(
+        st, 'carbon_tax_rate', default_inputs['carbon_tax_rate'],
+        unit="$/ton", min_value=0.0, max_value=200.0, step=5.0,
+        format="$%.0f"
+    )
+    inputs['carbon_tax_effective_rate'] = _make_slider(
+        st, 'carbon_tax_effective_rate', default_inputs['carbon_tax_effective_rate'],
+        unit="", min_value=0.5, max_value=1.0, step=0.05,
+        format="%.2f"
+    )
+    inputs['displaceable_proportion'] = _make_slider(
+        st, 'displaceable_proportion', default_inputs['displaceable_proportion'],
+        unit="", min_value=0.0, max_value=1.0, step=0.05,
+        format="%.2f"
+    )
+    # emissions – keep as text box (large number)
+    inputs['us_emissions_tons'] = st.text_input(
+        "Annual U.S. CO₂e Emissions (tons)",
+        value=f"{default_inputs['us_emissions_tons']:,}"
+    )
+
+# -------------------------------------------------
+# 6. Reinvestment
+# -------------------------------------------------
+with st.sidebar.expander("Reinvestment", expanded=False):
+    inputs['reinvestment_percentage'] = _make_slider(
+        st, 'reinvestment_percentage', default_inputs['reinvestment_percentage'],
+        unit="(fraction)", min_value=0.0, max_value=1.0, step=0.05,
+        format="%.2f"
+    )
+    inputs['investment_return_rate'] = _make_slider(
+        st, 'investment_return_rate', default_inputs['investment_return_rate'],
+        unit="", min_value=0.0, max_value=0.20, step=0.005,
+        format="%.3f"
+    )
+    inputs['discount_rate'] = _make_slider(
+        st, 'discount_rate', default_inputs['discount_rate'],
+        unit="", min_value=0.0, max_value=0.20, step=0.005,
+        format="%.3f"
+    )
+
+# -------------------------------------------------
+# 7. Bond Financing
+# -------------------------------------------------
+with st.sidebar.expander("Bond Financing", expanded=False):
+    
+    inputs['us_adult_population'] = st.slider(
+        "US Adult Population (M)", 200, 300,
+        int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
+    
+    inputs['bond_interest_rate'] = _make_slider(
+        st, 'bond_interest_rate', default_inputs['bond_interest_rate'],
+        unit="", min_value=0.0, max_value=0.10, step=0.001,
+        format="%.3f"
+    )
+    inputs['bond_term'] = st.number_input(
+        "Bond Term (years)", min_value=1, max_value=30,
+        value=default_inputs['bond_term'], step=1
+    )
+    inputs['dividend_percentage'] = _make_slider(
+        st, 'dividend_percentage', default_inputs['dividend_percentage'],
+        unit="(fraction)", min_value=0.0, max_value=1.0, step=0.05,
+        format="%.2f"
+    )
+    inputs['individual_investment'] = _make_slider(
+        st, 'individual_investment', default_inputs['individual_investment'],
+        unit="$", min_value=0, max_value=100_000, step=100,
+        format="$%.0f"
+    )
+    inputs['participation_rate_low'] = _make_slider(
+        st, 'participation_rate_low',
+        default_inputs['participation_rate_low'],
+        unit="",
+        min_value=0.0, max_value=1.00, step=0.05,
+        format="%.2f"
+    )
+    inputs['participation_rate_mid'] = _make_slider(
+        st, 'participation_rate_mid',
+        default_inputs['participation_rate_mid'],
+        unit="",
+        min_value=0.0, max_value=1.00, step=0.05,
+        format="%.2f"
+    )
+    inputs['participation_rate_high'] = _make_slider(
+        st, 'participation_rate_high',
+        default_inputs['participation_rate_high'],
+        unit="",
+        min_value=0.0, max_value=1.00, step=0.05,
+        format="%.2f"
+    )
+
+# # -------------------------------------------------
+# # 3. System Scale (already sliders – keep as-is)
+# # -------------------------------------------------
+# with st.sidebar.expander("System Scale", expanded=True):
+#     inputs['project_lifespan'] = st.text_input(
+#         "Project_Lifespan (Yrs)", default_inputs['project_lifespan']
+#     )
+#     inputs['efficiency_upgrade'] = st.text_input(
+#         "Efficiency Upgrade Ratio", default_inputs['efficiency_upgrade']
+#     )
+#     inputs['initial_capacity'] = st.slider(
+#         "Initial Capacity (GWp)",
+#         0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
+#     inputs['target_capacity'] = st.slider(
+#         "Target Capacity (GWp)",
+#         3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
+#     inputs['us_adult_population'] = st.slider(
+#         "US Adult Population (M)",
+#         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
+#     inputs['capacity_factor'] = _make_slider(
+#         'capacity_factor',
+#         default_inputs['capacity_factor'],
+#         unit="",
+#         min_value=0.15, max_value=0.31, step=0.0001,
+#         format="%.4f"
+#     )
+#     inputs['panel_rating'] = _make_slider(
+#         'panel_rating',
+#         default_inputs['panel_rating'],
+#         unit="W/m²",
+#         min_value=200.0, max_value=350.0, step=0.1,
+#         format="%.1f"
+#     )
+#     inputs['coverage_ratio'] = _make_slider(
+#         'Coverage Ratio',
+#         default_inputs['coverage_ratio'],
+#         unit="",
+#         min_value=0.0, max_value=1.0, step=0.1,
+#         format="%.1f"
+#     )
+#     inputs['degradation_rate'] = _make_slider(
+#         'Degradation Rate',
+#         default_inputs['degradation_rate'],
+#         unit="",
+#         min_value=0.000, max_value=0.015, step=0.005,
+#         format="%.3f"
+#     )
+
+
+# # -------------------------------------------------
+# # 4. Grouped sections
+# # -------------------------------------------------
+
+# with st.sidebar.expander("Costs", expanded=False):
+ 
+#     # ---- CAPEX (slider, fixed format) ----
+#     inputs['capital_cost_per_kwp'] = _make_slider(
+#         'capital_cost_per_kwp',
+#         default_inputs['capital_cost_per_kwp'],
+#         unit="$/kWp",
+#         min_value=500, max_value=3000, step=10,
+#         format="%.0f"   # ← FIXED: was "$%,d"
+#     )
+
+#     inputs['om_rate'] = _make_slider(
+#         'om_rate',
+#         default_inputs['om_rate'],
+#         unit="(fraction of CAPEX/yr)",
+#         min_value=0.0, max_value=0.05, step=0.001,
+#         format="%.3f"
+#     )
+
+#     inputs['grid_maintenance'] = _make_slider(
+#         'grid_maintenance',
+#         default_inputs['grid_maintenance'],
+#         unit="$/yr",
+#         min_value=0, max_value=200000000000, step=5000000000,
+#         format="$%.0f"
+#     )
+
+# with st.sidebar.expander("Revenue & Savings", expanded=True):
+#     inputs['revenue_per_kwh'] = _make_slider(
+#         'revenue_per_kwh',
+#         default_inputs['revenue_per_kwh'],
+#         unit="$/KWh",
+#         min_value=0.05, max_value=0.30, step=0.001,
+#         format="$%.3f"
+#     )
+#     inputs['avoided_fuel_per_kwh'] = _make_slider(
+#         'avoided_fuel_per_kwh',
+#         default_inputs['avoided_fuel_per_kwh'],
+#         unit="$/KWh",
+#         min_value=0.0, max_value=0.10, step=0.001,
+#         format="$%.3f"
+#     )
+#     inputs['us_emissions_tons'] = st.text_input(
+#         "Annual U.S. CO2e Emissions (tons)", default_inputs['us_emissions_tons']
+#     )
+#     inputs['carbon_tax_rate'] = _make_slider(
+#         'carbon_tax_rate',
+#         default_inputs['carbon_tax_rate'],
+#         unit="$/ton",
+#         min_value=0.00, max_value=200.00, step=5.00,
+#         format="%.0f"
+#     )
+#     inputs['carbon_tax_effective_rate'] = _make_slider(
+#         'carbon_tax_effective_rate',
+#         default_inputs['carbon_tax_effective_rate'],
+#         unit="",
+#         min_value=0.50, max_value=1.00, step=0.05,
+#         format="%.2f"
+#     )
+#     inputs['displaceable_proportion'] = _make_slider(
+#         'displaceable_proportion',
+#         default_inputs['displaceable_proportion'],
+#         unit="",
+#         min_value=0.00, max_value=1.00, step=0.05,
+#         format="%.2f"
+#     )
+
+
+
+# with st.sidebar.expander("ReInvestment Parameters", expanded=True):
+#     inputs['reinvestment_percentage'] = _make_slider(
+#         'reinvestment_percentage',
+#         default_inputs['reinvestment_percentage'],
+#         unit="%/100",
+#         min_value=0.0, max_value=1.0, step=0.05,
+#         format="%.2f"
+#     )
+#     inputs['discount_rate'] = _make_slider(
+#         'discount_rate',
+#         default_inputs['discount_rate'],
+#         unit="%/100",
+#         min_value=0.0, max_value=0.200, step=0.005,
+#         format="%.3f"
+#     )
+
+# with st.sidebar.expander("Bond Financing", expanded=True):
+#     inputs['bond_interest_rate'] = _make_slider(
+#         'bond_interest_rate',
+#         default_inputs['bond_interest_rate'],
+#         unit="",
+#         min_value=0.0, max_value=0.10, step=0.001,
+#         format="%.3f"
+#     )
+#     inputs['bond_term'] = st.sidebar.number_input(
+#         "Bond Term (years)", min_value=1, max_value=30,
+#         value=default_inputs['bond_term'], step=1)
+
+#     inputs['dividend_percentage'] = _make_slider(
+#         'dividend_percentage',
+#         default_inputs['dividend_percentage'],
+#         unit="%/100",
+#         min_value=0.00, max_value=1.00, step=0.05,
+#         format="%.2f"
+#     )
+#     inputs['individual_investment'] = _make_slider(
+#         'individual_investment',
+#         default_inputs['individual_investment'],
+#         unit="$",
+#         min_value=0, max_value=100000, step=100,
+#         format="%.0f"
+#     )
+#     inputs['investment_return_rate'] = _make_slider(
+#         'investment_return_rate',
+#         default_inputs['investment_return_rate'],
+#         unit="",
+#         min_value=0.0, max_value=0.200, step=0.005,
+#         format="%.3f"
+#     )
+    # inputs['participation_rate_low'] = _make_slider(
+    #     'participation_rate_low',
+    #     default_inputs['participation_rate_low'],
+    #     unit="",
+    #     min_value=0.0, max_value=1.00, step=0.05,
+    #     format="%.2f"
+    # )
+    # inputs['participation_rate_mid'] = _make_slider(
+    #     'participation_rate_mid',
+    #     default_inputs['participation_rate_mid'],
+    #     unit="",
+    #     min_value=0.0, max_value=1.00, step=0.05,
+    #     format="%.2f"
+    # )
+    # inputs['participation_rate_high'] = _make_slider(
+    #     'participation_rate_high',
+    #     default_inputs['participation_rate_high'],
+    #     unit="",
+    #     min_value=0.0, max_value=1.00, step=0.05,
+    #     format="%.2f"
+    # )
+
+# -------------------------------------------------
+# 6. TYPE CONVERSION – everything must be int/float
+# -------------------------------------------------
+def _to_num(val, is_int=False):
+    """Convert text → int/float, fall back to default on error."""
+    try:
+        if is_int:
+            return int(float(val.replace(',', '')))
+        return float(val.replace(',', ''))
+    except Exception:
+        return default_inputs.get(val, val)   # fallback
+
+# ---- integers ------------------------------------------------
+for k in ['project_lifespan', 'bond_term', 'individual_investment',
+          'us_adult_population', 'initial_capacity', 'target_capacity']:
+    if k in inputs:
+        inputs[k] = _to_num(inputs[k], is_int=True)
+
+# ---- floats --------------------------------------------------
+for k in default_inputs:
+    if k not in inputs or k in SKIP_EFFICIENCY:
+        continue
+    inputs[k] = _to_num(inputs[k], is_int=False)
+
+# # -------------------------------------------------
+# # 5. Remaining integer parameters (still text boxes)
+# # -------------------------------------------------
+# for param, value in default_inputs.items():
+#     if param in inputs or param in SKIP_EFFICIENCY:
+#         continue
+#     if isinstance(value, int):
+#         label = param.replace('_', ' ').title()
+#         formatted = f"{value:,}"
+#         user = st.sidebar.text_input(label, formatted)
+#         try:
+#             inputs[param] = int(user.replace(',', '').strip())
+#         except Exception:
+#             st.sidebar.warning(f"Invalid {label}. Using default.")
+#             inputs[param] = value
 
 # =============================================
 # LCOE VALIDATION MODE (ONE TOGGLE)
@@ -404,6 +770,50 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
