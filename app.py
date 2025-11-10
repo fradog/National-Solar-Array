@@ -69,7 +69,7 @@ default_inputs = {
     'efficiency_upgrade': 0.10,
     'capital_cost_per_kwp': 1_730,
     'om_rate': 0.01,
-    'grid_maintenance': 50_000_000_000,
+    'grid_maintenance_bn': 50, # $Billion 
     'discount_rate': 0.04,
     'degradation_rate': 0.007,
     'reinvestment_percentage': 0.5,
@@ -213,10 +213,10 @@ with st.sidebar.expander("Costs", expanded=False):
         unit="(fraction/yr)", min_value=0.0, max_value=0.05, step=0.001,
         format="%.3f"
     )
-    inputs['grid_maintenance'] = _make_slider(
-        st, 'grid_maintenance', default_inputs['grid_maintenance'],
-        unit="$/yr", min_value=0, max_value=200_000_000_000,
-        step=5_000_000_000, format="$%.0f"
+    inputs['grid_maintenance_bn'] = _make_slider(
+        st, 'grid_maintenance_bn', default_inputs['grid_maintenance_bn'],
+        unit="B$/yr", min_value=0, max_value=200,
+        step=5, format="$%.0f"
     )
 
 # -------------------------------------------------
@@ -324,198 +324,6 @@ with st.sidebar.expander("Bond Financing", expanded=False):
         format="%.2f"
     )
 
-# # -------------------------------------------------
-# # 3. System Scale (already sliders – keep as-is)
-# # -------------------------------------------------
-# with st.sidebar.expander("System Scale", expanded=True):
-#     inputs['project_lifespan'] = st.text_input(
-#         "Project_Lifespan (Yrs)", default_inputs['project_lifespan']
-#     )
-#     inputs['efficiency_upgrade'] = st.text_input(
-#         "Efficiency Upgrade Ratio", default_inputs['efficiency_upgrade']
-#     )
-#     inputs['initial_capacity'] = st.slider(
-#         "Initial Capacity (GWp)",
-#         0, 1000, int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
-#     inputs['target_capacity'] = st.slider(
-#         "Target Capacity (GWp)",
-#         3000, 7000, int(default_inputs['target_capacity']/1e6), 2) * 1_000_000
-#     inputs['us_adult_population'] = st.slider(
-#         "US Adult Population (M)",
-#         200, 300, int(default_inputs['us_adult_population']/1e6), 1) * 1_000_000
-#     inputs['capacity_factor'] = _make_slider(
-#         'capacity_factor',
-#         default_inputs['capacity_factor'],
-#         unit="",
-#         min_value=0.15, max_value=0.31, step=0.0001,
-#         format="%.4f"
-#     )
-#     inputs['panel_rating'] = _make_slider(
-#         'panel_rating',
-#         default_inputs['panel_rating'],
-#         unit="W/m²",
-#         min_value=200.0, max_value=350.0, step=0.1,
-#         format="%.1f"
-#     )
-#     inputs['coverage_ratio'] = _make_slider(
-#         'Coverage Ratio',
-#         default_inputs['coverage_ratio'],
-#         unit="",
-#         min_value=0.0, max_value=1.0, step=0.1,
-#         format="%.1f"
-#     )
-#     inputs['degradation_rate'] = _make_slider(
-#         'Degradation Rate',
-#         default_inputs['degradation_rate'],
-#         unit="",
-#         min_value=0.000, max_value=0.015, step=0.005,
-#         format="%.3f"
-#     )
-
-
-# # -------------------------------------------------
-# # 4. Grouped sections
-# # -------------------------------------------------
-
-# with st.sidebar.expander("Costs", expanded=False):
- 
-#     # ---- CAPEX (slider, fixed format) ----
-#     inputs['capital_cost_per_kwp'] = _make_slider(
-#         'capital_cost_per_kwp',
-#         default_inputs['capital_cost_per_kwp'],
-#         unit="$/kWp",
-#         min_value=500, max_value=3000, step=10,
-#         format="%.0f"   # ← FIXED: was "$%,d"
-#     )
-
-#     inputs['om_rate'] = _make_slider(
-#         'om_rate',
-#         default_inputs['om_rate'],
-#         unit="(fraction of CAPEX/yr)",
-#         min_value=0.0, max_value=0.05, step=0.001,
-#         format="%.3f"
-#     )
-
-#     inputs['grid_maintenance'] = _make_slider(
-#         'grid_maintenance',
-#         default_inputs['grid_maintenance'],
-#         unit="$/yr",
-#         min_value=0, max_value=200000000000, step=5000000000,
-#         format="$%.0f"
-#     )
-
-# with st.sidebar.expander("Revenue & Savings", expanded=True):
-#     inputs['revenue_per_kwh'] = _make_slider(
-#         'revenue_per_kwh',
-#         default_inputs['revenue_per_kwh'],
-#         unit="$/KWh",
-#         min_value=0.05, max_value=0.30, step=0.001,
-#         format="$%.3f"
-#     )
-#     inputs['avoided_fuel_per_kwh'] = _make_slider(
-#         'avoided_fuel_per_kwh',
-#         default_inputs['avoided_fuel_per_kwh'],
-#         unit="$/KWh",
-#         min_value=0.0, max_value=0.10, step=0.001,
-#         format="$%.3f"
-#     )
-#     inputs['us_emissions_tons'] = st.text_input(
-#         "Annual U.S. CO2e Emissions (tons)", default_inputs['us_emissions_tons']
-#     )
-#     inputs['carbon_tax_rate'] = _make_slider(
-#         'carbon_tax_rate',
-#         default_inputs['carbon_tax_rate'],
-#         unit="$/ton",
-#         min_value=0.00, max_value=200.00, step=5.00,
-#         format="%.0f"
-#     )
-#     inputs['carbon_tax_effective_rate'] = _make_slider(
-#         'carbon_tax_effective_rate',
-#         default_inputs['carbon_tax_effective_rate'],
-#         unit="",
-#         min_value=0.50, max_value=1.00, step=0.05,
-#         format="%.2f"
-#     )
-#     inputs['displaceable_proportion'] = _make_slider(
-#         'displaceable_proportion',
-#         default_inputs['displaceable_proportion'],
-#         unit="",
-#         min_value=0.00, max_value=1.00, step=0.05,
-#         format="%.2f"
-#     )
-
-
-
-# with st.sidebar.expander("ReInvestment Parameters", expanded=True):
-#     inputs['reinvestment_percentage'] = _make_slider(
-#         'reinvestment_percentage',
-#         default_inputs['reinvestment_percentage'],
-#         unit="%/100",
-#         min_value=0.0, max_value=1.0, step=0.05,
-#         format="%.2f"
-#     )
-#     inputs['discount_rate'] = _make_slider(
-#         'discount_rate',
-#         default_inputs['discount_rate'],
-#         unit="%/100",
-#         min_value=0.0, max_value=0.200, step=0.005,
-#         format="%.3f"
-#     )
-
-# with st.sidebar.expander("Bond Financing", expanded=True):
-#     inputs['bond_interest_rate'] = _make_slider(
-#         'bond_interest_rate',
-#         default_inputs['bond_interest_rate'],
-#         unit="",
-#         min_value=0.0, max_value=0.10, step=0.001,
-#         format="%.3f"
-#     )
-#     inputs['bond_term'] = st.sidebar.number_input(
-#         "Bond Term (years)", min_value=1, max_value=30,
-#         value=default_inputs['bond_term'], step=1)
-
-#     inputs['dividend_percentage'] = _make_slider(
-#         'dividend_percentage',
-#         default_inputs['dividend_percentage'],
-#         unit="%/100",
-#         min_value=0.00, max_value=1.00, step=0.05,
-#         format="%.2f"
-#     )
-#     inputs['individual_investment'] = _make_slider(
-#         'individual_investment',
-#         default_inputs['individual_investment'],
-#         unit="$",
-#         min_value=0, max_value=100000, step=100,
-#         format="%.0f"
-#     )
-#     inputs['investment_return_rate'] = _make_slider(
-#         'investment_return_rate',
-#         default_inputs['investment_return_rate'],
-#         unit="",
-#         min_value=0.0, max_value=0.200, step=0.005,
-#         format="%.3f"
-#     )
-    # inputs['participation_rate_low'] = _make_slider(
-    #     'participation_rate_low',
-    #     default_inputs['participation_rate_low'],
-    #     unit="",
-    #     min_value=0.0, max_value=1.00, step=0.05,
-    #     format="%.2f"
-    # )
-    # inputs['participation_rate_mid'] = _make_slider(
-    #     'participation_rate_mid',
-    #     default_inputs['participation_rate_mid'],
-    #     unit="",
-    #     min_value=0.0, max_value=1.00, step=0.05,
-    #     format="%.2f"
-    # )
-    # inputs['participation_rate_high'] = _make_slider(
-    #     'participation_rate_high',
-    #     default_inputs['participation_rate_high'],
-    #     unit="",
-    #     min_value=0.0, max_value=1.00, step=0.05,
-    #     format="%.2f"
-    # )
 
 # -------------------------------------------------
 # 6. TYPE CONVERSION – everything must be int/float
@@ -770,6 +578,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
