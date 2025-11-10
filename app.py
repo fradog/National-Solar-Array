@@ -459,16 +459,16 @@ else:
 # =============================================
 # DIAGNOSTIC TABLE
 # =============================================
-st.markdown("#### Diagnostic Breakdown")
-diag_df = pd.DataFrame([
-    {"Metric": "Total CAPEX", "Value": f"${lcoe_full['Total CAPEX ($)']/1e9:,.2f} B"},
-    {"Metric": "PV of Total Costs", "Value": f"${lcoe_full['PV Costs ($)']/1e9:,.2f} B"},
-    {"Metric": "PV of Total Energy", "Value": f"{lcoe_full['PV Energy (TWh)']:.2f} TWh"},
-    {"Metric": "Final Eff Capacity", "Value": f"{diag['Final Eff Capacity (TW)']:.2f} TW"},
-    {"Metric": "Year 1 Energy", "Value": f"{diag['Year 1 Energy (TWh)']:.2f} TWh"},
-    {"Metric": "Year 30 Energy", "Value": f"{diag['Year 30 Energy (TWh)']:.2f} TWh"},
-])
-st.dataframe(diag_df, use_container_width=True, hide_index=True)
+# st.markdown("#### Diagnostic Breakdown")
+# diag_df = pd.DataFrame([
+#     {"Metric": "Total CAPEX", "Value": f"${lcoe_full['Total CAPEX ($)']/1e9:,.2f} B"},
+#     {"Metric": "PV of Total Costs", "Value": f"${lcoe_full['PV Costs ($)']/1e9:,.2f} B"},
+#     {"Metric": "PV of Total Energy", "Value": f"{lcoe_full['PV Energy (TWh)']:.2f} TWh"},
+#     {"Metric": "Final Eff Capacity", "Value": f"{diag['Final Eff Capacity (TW)']:.2f} TW"},
+#     {"Metric": "Year 1 Energy", "Value": f"{diag['Year 1 Energy (TWh)']:.2f} TWh"},
+#     {"Metric": "Year 30 Energy", "Value": f"{diag['Year 30 Energy (TWh)']:.2f} TWh"},
+# ])
+# st.dataframe(diag_df, use_container_width=True, hide_index=True)
 
 # =============================================
 # RESULTS
@@ -556,6 +556,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
