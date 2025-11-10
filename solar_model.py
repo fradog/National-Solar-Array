@@ -30,7 +30,7 @@ def calculate_bond_principal(inputs, buildout_years=10):
     hours_per_year = inputs['capacity_factor'] * 8760
     capital_cost_per_kwp = inputs['capital_cost_per_kwp']
     om_rate = inputs['om_rate']
-    grid_maintenance = inputs['grid_maintenance']
+    grid_maintenance = inputs['grid_maintenance_bn'] * 10**9
     revenue_per_kwh = inputs['revenue_per_kwh']
     avoided_fuel_per_kwh = inputs['avoided_fuel_per_kwh']
     degradation_rate = inputs['degradation_rate']
@@ -85,7 +85,7 @@ def calculate_cash_flows(inputs, bond_principal, project_lifespan=30):
     avoided_fuel_per_kwh = inputs['avoided_fuel_per_kwh']
     capital_cost_per_kwp = inputs['capital_cost_per_kwp']
     om_rate = inputs['om_rate']
-    grid_maintenance = inputs['grid_maintenance']
+    grid_maintenance = inputs['grid_maintenance_bn'] * 10**9
     degradation_rate = inputs['degradation_rate']
     reinvestment_percentage = inputs['reinvestment_percentage']
     investment_return_rate = inputs['investment_return_rate']
@@ -194,7 +194,7 @@ def calculate_lcoe_simple(inputs: dict, project_lifespan: int = 30) -> dict:
     discount_rate      = inputs['discount_rate']
     capex_per_kw       = inputs['capital_cost_per_kwp']
     om_rate            = inputs['om_rate']
-    grid_maintenance   = inputs['grid_maintenance']
+    grid_maintenance   = inputs['grid_maintenance_bn'] * 10**9
     cf                 = inputs['capacity_factor']
     deg_rate           = inputs['degradation_rate']
     init_kw            = inputs['initial_capacity']
@@ -282,7 +282,7 @@ def calculate_lcoe_diagnostic(inputs: dict, project_lifespan: int = 30) -> dict:
     discount_rate      = inputs['discount_rate']
     capex_per_kw       = inputs['capital_cost_per_kwp']
     om_rate            = inputs['om_rate']
-    grid_maintenance   = inputs['grid_maintenance']
+    grid_maintenance   = inputs['grid_maintenance_bn'] * 10**9
     cf                 = inputs['capacity_factor']
     deg_rate           = inputs['degradation_rate']
     init_kw            = inputs['initial_capacity']
@@ -421,6 +421,7 @@ def calculate_metrics(inputs, cash_flows_df, bond_principal, project_lifespan=30
         'Individual Bond Investor IRR (%)': investor_irr,
         'Individual Bond Investor Ending Balance ($)': investor_ending_value
     }
+
 
 
 
