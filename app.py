@@ -380,7 +380,7 @@ st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
          unsafe_allow_html=True)
 st.write(f"**Target Annual Energy**: {target_energy_twh:,.0f} TWh")
 st.write(f"**System Annual Energy**: {final_energy_twh:,.0f} TWh")
-st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage: {inputs['coverage_ratio']:.2f})")
+st.write(f"**Area Required**: {required_area:,.0f} sq mi (coverage ratio: {inputs['coverage_ratio']:.2f})")
 st.metric(
     "Energy Gap (Target vs. Array Energy Output at Full Capacity (incl. degradation))",
     f"{energy_gap:,.2f} TWh",
@@ -555,6 +555,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
