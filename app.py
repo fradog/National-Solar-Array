@@ -372,7 +372,7 @@ energy_gap = target_energy_twh - final_energy_twh
 
 st.header("System Size")
 st.write(f"<span style='font-size:0.85rem; font-style:italic;'>"
-         f"The size of the solar system represented here is that which is required to replace fossil fueled energy in 2023, 77.1 quads (22,596 teraWatthours). \
+         f"The size of the solar system represented here is that which is required to replace fossil fueled energy in 2023, {target_energy_quads:%.2f} quads (22,596 teraWatthours). \
          The existing other renewables and nuclear as of 2023 remain as is over the lifetime of the system. If these are upgraded or added \
          to, those additions would reduce the size of the array assuming total U.S consumption remains level over the life of the system.\
          In theory they could be left as is, but next gen nuclear offers local energy density for extreme local demands like those of future AI training datacenters."
@@ -555,6 +555,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
