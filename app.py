@@ -167,7 +167,6 @@ with st.sidebar.expander("System Scale", expanded=True):
     inputs['efficiency_upgrade'] = st.text_input(
         "Efficiency Upgrade Ratio", value=f"{efficiency_upgrade_ratio:,.3f}"
     )
-
     inputs['initial_capacity'] = st.slider(
         "Initial Capacity (GWp)", 0, 1000,
         int(default_inputs['initial_capacity']/1e6), 10) * 1_000_000
@@ -366,7 +365,7 @@ funding_mix_df = calculate_funding_mix(inputs, bond_principal)
 metrics = calculate_metrics(inputs, cash_flows_df, bond_principal)
 
 # Target energy with efficiency
-target_energy_quads = efficiency_upgrade_ratio * 77.10
+target_energy_quads = efficiency_upgrade_ratio * mix_inputs['total_energy_quads']       #77.10
 target_energy_twh = target_energy_quads * 293.07
 final_energy_twh = cash_flows_df.loc[cash_flows_df['Year'] == 30, 'Energy Yield (TWh)'].iloc[0] 
 energy_gap = target_energy_twh - final_energy_twh
@@ -556,6 +555,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
