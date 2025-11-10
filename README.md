@@ -22,12 +22,34 @@ The model shows that **at current average electricity prices (~$0.16/kWh)**, the
 - High investor returns
 - National reinvestment or public dividends
 
-One interesting scenario to set up is one where the reinvestment percentage is very low, so that the reinvetsed account grows only large enogh to cover another array for the next 30 years, about $1 Trillion. This increases the amounts available to pay bills or dividends to bondholders. If the dividend percentage is then increased, the individual bond holders' returns increase dramatically, making the bond one of the most attractive investments available. This would be a situation where we would be maximally redirecting the proceeds from the array to the public shareholders annually. 
+## Scenario: Maximizing Annual Payouts to Bondholders
 
-A note about inflation. The simulation does not increase costs at an inflationary rate. All costs are 2024 numbers. Any inflation in costs would be followed by an increase in revenues via an increase in the price to consumers of the energy per KWh from the array. The discount rate used for Net Present Value calculations and for Levelized Cost of Energy calculations (Weighted Average Cost of Capital) should be in real values as opposed to nominal. 
+A compelling configuration minimizes reinvestment, allowing the **reinvestment fund** to grow only to ~$1 trillion—just enough to finance a full array replacement every 30 years. This frees the vast majority of annual cash flows for:
 
-At this scale the National Array, capable of amassing Trillions annually, is a major component of the total value of the U.S. Economy, which is nearly $30 Trillion today. Given that energy is a fundamental driver of the U.S. economy, controlling the price of the energy it yields can potentially control inflation.
-In many ways the array can be considered as a new, controllable component of the U.S. Treasury and its available feedback and control mechanisms. Eventually the economy would evolve to one tied to solar energy, a vast and abundant resource. 
+- **Debt service** (bond principal + interest)  
+- **Dividend distributions** to bondholders  
+
+**Result**: With a high *dividend percentage* (e.g., 80–90%), individual bondholders receive **exceptionally high annual yields**, transforming the bonds into one of the most attractive fixed-income investments available.  
+
+This scenario represents **maximum annual redistribution** of solar proceeds to public investors—effectively treating the array as a high-yield, infrastructure-backed annuity.
+
+---
+
+## Inflation and Economic Assumptions
+
+- **All costs and revenues are in *2024 real dollars***. The model does **not** apply inflation to construction, O&M, or energy prices.  
+- In a real-world rollout, any cost inflation would likely be offset by corresponding increases in **wholesale electricity prices** (passed through to consumers).  
+- **Discount rate** (used for NPV and LCOE via WACC) is therefore expressed in **real terms**, consistent with constant-dollar modeling.
+
+---
+
+## Macro-Scale Implications
+
+At full deployment, the National Solar Array generates **trillions in annual cash flow**—a scale comparable to ~10% of current U.S. GDP (~$30 trillion in 2025).  
+
+Given energy’s role as a foundational input, **controlled solar pricing** could serve as a powerful **anti-inflationary lever**. By stabilizing or reducing real energy costs, the array introduces a new degree of monetary and economic control.
+
+In effect, the array functions as a **controllable asset of the U.S. Treasury**—with built-in feedback loops via pricing, reinvestment, and dividend policies. Over decades, the U.S. economy would increasingly **anchor to solar abundance**, shifting from fossil scarcity to renewable plenty as the primary growth constraint. 
 
 ## Philosophical Considerations in Costs and Revenues
 
