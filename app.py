@@ -215,7 +215,7 @@ with st.sidebar.expander("Costs", expanded=False):
     )
     inputs['grid_maintenance'] = _make_slider(
         st, 'grid_maintenance', default_inputs['grid_maintenance'],
-        unit="$B/yr", min_value=0, max_value=200_000_000_000,
+        unit="$/yr", min_value=0, max_value=200_000_000_000,
         step=5_000_000_000, format="$%.0f"
     )
 
@@ -770,6 +770,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
