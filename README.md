@@ -24,7 +24,7 @@ The model shows that **at current average electricity prices (~$0.16/kWh)**, the
 
 ## Scenario: Maximizing Annual Payouts to Bondholders
 
-A compelling configuration minimizes reinvestment, allowing the **reinvestment fund** to grow only to ~$1 trillion—just enough to finance a full array replacement every 30 years. This frees the vast majority of annual cash flows for:
+A compelling configuration minimizes reinvestment, allowing the **reinvestment fund** to grow only enough to finance a full array replacement every 30 years. This frees the vast majority of annual cash flows for:
 
 - **Debt service** (bond principal + interest)  
 - **Dividend distributions** to bondholders  
@@ -45,7 +45,7 @@ This scenario represents **maximum annual redistribution** of solar proceeds to 
 
 ## Macro-Scale Implications
 
-At full deployment, the National Solar Array generates **trillions in annual cash flow**—a scale comparable to ~10% of current U.S. GDP (~$30 trillion in 2025).  
+At full deployment, the National Solar Array generates **trillions in annual cash flow**—a scale comparable to a significant portion of the current U.S. GDP (~$30 trillion in 2025).  
 
 Given energy’s role as a foundational input, **controlled solar pricing** could serve as a powerful **anti-inflationary lever**. By stabilizing or reducing real energy costs, the array introduces a new degree of monetary and economic control.
 
