@@ -156,12 +156,6 @@ def _make_slider(container, param: str, default: float | int, unit: str = "", **
     label = f"{pretty} {unit}".strip()
     return container.slider(label, value=default, **kwargs)
 
-# def _make_slider(param: str, default: float | int, unit: str = "", **kwargs):
-#     """Create a slider with a *custom* label that includes the unit."""
-#     # Build a pretty label:  "Revenue Per KWh"  →  "Consumer Energy Price $/kWh"
-#     pretty = param.replace('_', ' ').title()
-#     label = f"{pretty} {unit}".strip()
-#     return st.sidebar.slider(label, value=default, **kwargs)
 # -------------------------------------------------
 # 3. System Scale (mixed – keep as-is)
 # -------------------------------------------------
@@ -348,22 +342,6 @@ for k in default_inputs:
     if k not in inputs or k in SKIP_EFFICIENCY:
         continue
     inputs[k] = _to_num(inputs[k], is_int=False)
-
-# # -------------------------------------------------
-# # 5. Remaining integer parameters (still text boxes)
-# # -------------------------------------------------
-# for param, value in default_inputs.items():
-#     if param in inputs or param in SKIP_EFFICIENCY:
-#         continue
-#     if isinstance(value, int):
-#         label = param.replace('_', ' ').title()
-#         formatted = f"{value:,}"
-#         user = st.sidebar.text_input(label, formatted)
-#         try:
-#             inputs[param] = int(user.replace(',', '').strip())
-#         except Exception:
-#             st.sidebar.warning(f"Invalid {label}. Using default.")
-#             inputs[param] = value
 
 # =============================================
 # LCOE VALIDATION MODE (ONE TOGGLE)
@@ -578,6 +556,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
