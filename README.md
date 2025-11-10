@@ -22,6 +22,36 @@ The model shows that **at current average electricity prices (~$0.16/kWh)**, the
 - High investor returns
 - National reinvestment or public dividends
 
+One interesting scenario to set up is one where the reinvestment percentage is very low, so that the reinvetsed account grows only large enogh to cover another array for the next 30 years, about $1 Trillion. This increases the amounts available to pay bills or dividends to bondholders. If the dividend percentage is then increased, the individual bond holders' returns increase dramatically, making the bond one of the most attractive investments available. This would be a situation where we would be maximally redirecting the proceeds from the array to the public shareholders annually. 
+
+A note about inflation. The simulation does not increase costs at an inflationary rate. All costs are 2024 numbers. Any inflation in costs would be followed by an increase in revenues via an increase in the price to consumers of the energy per KWh from the array. The discount rate used for Net Present Value calculations and for Levelized Cost of Energy calculations (Weighted Average Cost of Capital) should be in real values as opposed to nominal. 
+
+At this scale the National Array, capable of amassing Trillions annually, is a major component of the total value of the U.S. Economy, which is nearly $30 Trillion today. Given that energy is a fundamental driver of the U.S. economy, controlling the price of the energy it yields can potentially control inflation.
+In many ways the array can be considered as a new, controllable component of the U.S. Treasury and its available feedback and control mechanisms. Eventually the economy would evolve to one tied to solar energy, a vast and abundant resource. 
+
+## Philosophical Considerations in Costs and Revenues
+
+This model incorporates three revenue sources that involve philosophical or policy judgments. Each can be adjusted or zeroed out using the sliders in the tool. Their inclusion has a meaningful but not decisive impact on the overall results.
+
+1. **Avoided Fossil Fuel Costs**  
+   I treat the *energy content* of fossil fuels that would otherwise be burned to generate an equivalent amount of electricity as a revenue stream over the array’s lifetime. This is equivalent to the wholesale cost of the displaced fuel (e.g., natural gas, coal).  
+   *Rationale*: Society avoids purchasing and combusting that fuel.  
+   *Debate*: Whether this should count as “revenue” to the project (vs. a societal saving) is subjective. Set the “Avoided fuel cost per kWh” slider to $0 to exclude it.
+
+2. **Carbon Tax Revenue**  
+   A hypothetical carbon tax is applied to residual fossil generation during the build-out phase. The resulting revenue is used **exclusively to reduce bond principal** in the years it is collected.  
+   *Behavior*: Tax revenue declines to zero as the solar array displaces fossil generation.  
+   *Rationale*: Captures the declining externality cost of carbon during the transition.  
+   *Debate*: Assumes a specific tax exists and that its proceeds are earmarked for this project.
+
+3. **Reallocated Fossil Fuel Subsidies**  
+   The model assumes the $22.5 billion in annual U.S. fossil fuel subsidies is redirected **as a one-time lump-sum contribution** at project start. This reduces the bond principal that must be raised from investors (and thus any residual taxpayer exposure if bonds are undersubscribed).  
+   *Rationale*: Public funds currently supporting fossil fuels are instead used to accelerate clean infrastructure.  
+   *Debate*: Requires explicit policy change; treated here as a scenario assumption.
+
+**Transparency Note**  
+All three items are isolated inputs. Users can set any or all to zero to see results under more conservative accounting that counts only direct electricity sales and investment returns. 
+
 ---
 
 ## Background and Motivation
@@ -78,8 +108,7 @@ Contributions welcome from those who see solar not as a cost, but as **the great
 | **NREL ATB Comparison** | Side-by-side FCR-based LCOE (no degradation) |
 | **Efficiency Downgrade** | Models energy savings from electrifying transport & heating |
 | **Bond + Dividend Model** | Public participation via $10k bonds, with CAGR/IRR tracking |
-| **Plotly Visualizations** | Cash flows, balances, emissions reduction |
-| **No Index Columns** | Clean tables using `.hide_index()` |
+
 
 ---
 
