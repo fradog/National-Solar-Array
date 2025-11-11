@@ -438,7 +438,7 @@ unlevered_npv = npf.npv(inputs['discount_rate'], unlevered_cf) / 1e12
 # DISPLAY: LCOE + VALIDATION
 # =============================================
 st.markdown("---")
-st.subheader("Levelised Cost of Energy (LCOE)")
+st.subheader("Levelized Cost of Energy (LCOE)")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -555,6 +555,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
