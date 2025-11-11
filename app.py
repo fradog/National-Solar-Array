@@ -218,7 +218,7 @@ with st.sidebar.expander("Costs", expanded=False):
 with st.sidebar.expander("Revenue & Savings", expanded=False):
     inputs['revenue_per_kwh'] = _make_slider(
         st, 'revenue_per_kwh', default_inputs['revenue_per_kwh'],
-        unit="$/kWh", min_value=0.05, max_value=0.30, step=0.001,
+        unit="$/kWh", min_value=0.00, max_value=0.30, step=0.001,
         format="$%.3f"
     )
     inputs['avoided_fuel_per_kwh'] = _make_slider(
@@ -555,6 +555,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
