@@ -139,6 +139,32 @@ efficiency_upgrade_ratio = calculate_efficiency_upgrade(mix_inputs)
 default_inputs['efficiency_upgrade'] = efficiency_upgrade_ratio
 st.write(f"**Efficiency Upgrade Ratio**: {efficiency_upgrade_ratio:,.3f}")
 
+
+# =============================================
+# SIDEBAR INPUTS – GROUPED & CUSTOM LABELS
+# =============================================
+st.sidebar.header("Input Parameters")
+inputs = {}
+
+# -------------------------------------------------
+# 1. Helper: skip efficiency params (they live in main body)
+# -------------------------------------------------
+SKIP_EFFICIENCY = {
+    'vehicle_ice_eff',
+    'vehicle_elec_eff',
+    'utility_ice_elec_eff'
+}
+
+# -------------------------------------------------
+# 2. Custom label + slider logic
+# -------------------------------------------------
+def _make_slider(container, param: str, default: float | int, unit: str = "", **kwargs):
+    """Create a slider inside the given container (expander, sidebar, etc.)"""
+    pretty = param.replace('_', ' ').title()
+    label = f"{pretty} {unit}".strip()
+    return container.slider(label, value=default, **kwargs)
+
+
 # -------------------------------------------------
 # SIDEBAR – WRAP EVERYTHING IN A FORM
 # -------------------------------------------------
@@ -836,6 +862,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
