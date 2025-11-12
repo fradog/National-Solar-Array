@@ -172,10 +172,9 @@ SKIP_EFFICIENCY = {
 # -------------------------------------------------
 
 def _make_slider(container, param: str, default: float | int, unit: str = "", key: str | None = None, **kwargs):
-    """Create a slider inside the given container, using session_state for persistence."""
     pretty = param.replace('_', ' ').title()
     label = f"{pretty} {unit}".strip()
-    key = key or param  # use param name as key if none provided
+    key = key or param
     value = st.session_state.get(key, default)
     return container.slider(label, value=value, key=key, **kwargs)
 
@@ -223,15 +222,6 @@ with st.sidebar.expander("System Scale", expanded=True):
     inputs['target_capacity'] = st.slider(
         "Target Capacity (GWp)", 3000, 7000,
         int(st.session_state.get(key, default_gwp * 1e6) / 1e6), 2,
-        key=key
-    ) * 1_000_000
-
-    # US Adult Population
-    key = "us_adult_population"
-    default_m = int(default_inputs['us_adult_population'] / 1e6)
-    inputs['us_adult_population'] = st.slider(
-        "US Adult Population (M)", 200, 300,
-        int(st.session_state.get(key, default_m * 1e6) / 1e6), 1,
         key=key
     ) * 1_000_000
 
@@ -750,6 +740,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
