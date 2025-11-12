@@ -47,6 +47,9 @@ LEGEND_ABOVE = dict(
 # PAGE TITLE & DESCRIPTION
 # =============================================
 st.share()
+st.markdown("[Full README](https://github.com/fradog/national-solar-array/blob/main/README.md)")
+
+
 st.set_page_config(page_title="National Solar Array: Net Zero Economics")
 st.title("National Solar Array Finance Calculator")
 st.write(
@@ -559,6 +562,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
