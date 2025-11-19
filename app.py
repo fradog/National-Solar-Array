@@ -492,7 +492,7 @@ st.write("<span style='font-size:0.85rem; font-style:italic;'>"
          It is roughly on the order of one year's defense budget. Investors in this bond will see compound annual growth rates \
          competitive with other much higher risk investments. \
          Try moving the Reinvestment Percentage slider toward zero and push the Dividend Percentage slider toward one and watch the \
-         investor's balance syrocket. This simulation divides the net cash-flow-in into a mix of an amount paid out to investors as dividends \
+         investor's balance skyrocket. This simulation divides the net cash-flow-in into a mix of an amount paid out to investors as dividends \
          and an amount paid out for other purposes. Those could be to pay unforeseen bills, for reinvestment, or any other creative\
          purpose in the interest of the nation."
          "</span>",
@@ -562,6 +562,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
