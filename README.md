@@ -1,4 +1,4 @@
-# National Solar Array Bond Initiative
+# National Solar Array Modeling Tool
 
 **A financial and energy modeling tool demonstrating that a massive U.S. solar + storage array can achieve Net Zero by ~2035–2037 with strong economic returns, energy independence, and broad public participation.**
 
