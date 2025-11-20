@@ -58,7 +58,7 @@ st.write(
     "This calculator allows the user to better understand that a massive solar + storage array can realistically \
     help drive the U.S. to Net Zero carbon dioxide emissions by ~2035–2037, "
     "with strong financial returns, energy independence, and no one left behind. Funded via bonds or budget, "
-    "revenues at current electricity prices far exceed costs. This is the potential that massive deployment, \
+    "revenues at current electricity prices far exceed costs. This is the potential that massive solar deployment, \
     on a scale one order of magnitude greater than currently discussed, offers."
     "</span>",
     unsafe_allow_html=True
@@ -563,6 +563,7 @@ emissions_data = [
 fig3 = px.line(pd.DataFrame(emissions_data), x='Year', y='Total Emissions (B tons)', title='Emissions Reduction')
 fig3.update_layout(**LEGEND_ABOVE)
 st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
