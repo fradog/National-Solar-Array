@@ -184,7 +184,7 @@ with st.sidebar.expander("System Scale", expanded=True):
 
     inputs['capacity_factor'] = _make_slider(
         st, 'capacity_factor', default_inputs['capacity_factor'],
-        unit="", min_value=0.15, max_value=0.35, step=0.0001, format="%.4f"
+        unit="", min_value=0.15, max_value=0.40, step=0.0001, format="%.4f"
     )
     inputs['panel_rating'] = _make_slider(
         st, 'panel_rating', default_inputs['panel_rating'],
